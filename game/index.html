@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>π: Lost in Space</title>
+  <link rel="stylesheet" href="assets/theme.css">
+</head>
+<body>
+  <div id="app">
+    <header id="topbar">
+      <div id="hud-title"><div id="hud-level"></div><div id="hud-stage"></div></div>
+      <div id="hud-tracker"></div>
+      <div id="hud-keys"></div>
+    </header>
+    <main id="play">
+      <div id="stage-wrap"><canvas id="game-canvas"></canvas></div>
+      <aside id="sidebar"><div id="hud-method"></div><div id="hud-info"></div></aside>
+    </main>
+  </div>
+  <div id="modal-root" hidden></div>
+  <div id="toast"></div>
+  <noscript>This game needs JavaScript.</noscript>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

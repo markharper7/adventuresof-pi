@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="g" cx="35%" cy="32%" r="80%">
+      <stop offset="0" stop-color="#ffe2b0"/>
+      <stop offset="1" stop-color="#a8581f"/>
+    </radialGradient>
+    <clipPath id="c"><circle cx="32" cy="32" r="22"/></clipPath>
+  </defs>
+  <!-- back half of ring -->
+  <ellipse cx="32" cy="32" rx="31" ry="8" fill="none" stroke="#e9d3a6" stroke-width="3" opacity="0.5" transform="rotate(-15 32 32)"/>
+  <circle cx="32" cy="32" r="22" fill="url(#g)"/>
+  <g clip-path="url(#c)" opacity="0.5">
+    <rect x="0" y="18" width="64" height="4" fill="#8a4316"/>
+    <rect x="0" y="28" width="64" height="6" fill="#c97a3a"/>
+    <rect x="0" y="40" width="64" height="3" fill="#8a4316"/>
+    <ellipse cx="40" cy="38" rx="5" ry="3" fill="#a3361b"/>
+  </g>
+  <!-- front half of ring -->
+  <path d="M2.3 40 A31 8 -15 0 0 61.7 24" fill="none" stroke="#f6e4bd" stroke-width="3" transform="rotate(0 32 32)"/>
+</svg>

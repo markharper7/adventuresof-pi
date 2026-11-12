@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- outline -->
+    <path d="M34 17 L34 54" stroke="#145c35" stroke-width="20"/>
+    <path d="M34 17 L20 27 M22 56 L46 56" stroke="#145c35" stroke-width="14"/>
+    <!-- body -->
+    <path d="M34 17 L34 54" stroke="#7ff29a" stroke-width="15"/>
+    <path d="M34 17 L20 27 M22 56 L46 56" stroke="#7ff29a" stroke-width="9"/>
+    <!-- shine -->
+    <path d="M34 17 L34 54" stroke="#d9ffe2" stroke-width="2" opacity="0.6" transform="translate(-1.2 -2)"/>
+  </g>
+  <path d="M24 13 Q24 2 34 2 Q44 2 44 13 Z" fill="#ffffff" stroke="#0c1440" stroke-width="1.8"/>
+  <rect x="21" y="11" width="26" height="4.5" rx="2" fill="#1d2b6b" stroke="#0c1440" stroke-width="1"/>
+  <circle cx="34" cy="7.5" r="2.4" fill="#ffd34d" stroke="#a87b00" stroke-width="0.8"/>
+  <!-- eyes -->
+  <circle cx="29.5" cy="22" r="3.9" fill="#ffffff" stroke="#145c35" stroke-width="1"/>
+  <circle cx="30.3" cy="22.5" r="2.028" fill="#0b1640"/>
+  <circle cx="38.5" cy="22" r="3.9" fill="#ffffff" stroke="#145c35" stroke-width="1"/>
+  <circle cx="39.3" cy="22.5" r="2.028" fill="#0b1640"/>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- outline -->
+    <path d="M7 37 L12 34 L19 55 L28 9 H55" stroke="#0c3d4a" stroke-width="15"/>
+    <path d="M35 27 Q35 19 44 19 Q53 19 53 28 Q53 35 35 54 H55" stroke="#0c3d4a" stroke-width="12"/>
+    <!-- body -->
+    <path d="M7 37 L12 34 L19 55 L28 9 H55" stroke="#7fe6ff" stroke-width="10"/>
+    <path d="M35 27 Q35 19 44 19 Q53 19 53 28 Q53 35 35 54 H55" stroke="#7fe6ff" stroke-width="7"/>
+    <!-- shine -->
+    <path d="M7 37 L12 34 L19 55 L28 9 H55" stroke="#d6f8ff" stroke-width="2" opacity="0.6" transform="translate(-1.2 -2)"/>
+  </g>
+  <!-- eyes -->
+  <circle cx="38.5" cy="9" r="3.7" fill="#ffffff" stroke="#0c3d4a" stroke-width="1"/>
+  <circle cx="39.3" cy="9.5" r="1.924" fill="#0b1640"/>
+  <circle cx="48" cy="9" r="3.7" fill="#ffffff" stroke="#0c3d4a" stroke-width="1"/>
+  <circle cx="48.8" cy="9.5" r="1.924" fill="#0b1640"/>
+</svg>

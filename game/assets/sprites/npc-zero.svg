@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- outline -->
+    <path d="M32 9 A16 23 0 1 1 31.9 9 Z" stroke="#2a3247" stroke-width="16"/>
+    <!-- body -->
+    <path d="M32 9 A16 23 0 1 1 31.9 9 Z" stroke="#d9e0ee" stroke-width="11"/>
+    <!-- shine -->
+    <path d="M32 9 A16 23 0 1 1 31.9 9 Z" stroke="#ffffff" stroke-width="2" opacity="0.6" transform="translate(-1.2 -2)"/>
+  </g>
+  <!-- eyes -->
+  <circle cx="27" cy="10.6" r="3.8" fill="#ffffff" stroke="#2a3247" stroke-width="1"/>
+  <circle cx="27.8" cy="11.1" r="1.976" fill="#0b1640"/>
+  <circle cx="37" cy="10.6" r="3.8" fill="#ffffff" stroke="#2a3247" stroke-width="1"/>
+  <circle cx="37.8" cy="11.1" r="1.976" fill="#0b1640"/>
+</svg>
