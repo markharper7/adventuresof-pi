@@ -30,7 +30,7 @@ ones you know. Anyone starting at Level 1 or later gets all of them.
 | H | help | after trying all four moves |
 | Enter (or Space) | talk · use · pick up · drop | when 3 calls out to you |
 | drag / T | π tracker: drag values into MIN / MAX, or press T to type them | Level 1 |
-| L | mission select (replay unlocked missions) | Level 1 |
+| L | mission select: pick a level, then (if it has several) a stage | Level 1 |
 | R | restart / abort current attempt | Level 1 |
 | ` or F9 | debug menu | always |
 
@@ -58,11 +58,13 @@ debug menu's demo statistics are the only exception.
 ## Levels
 
 0. **Wake Up** (intro, no maths) — π wakes beside a crashed pod with no memory,
-   learns to move, then H. **3** calls out and teaches Enter, then asks π who they
-   are, and π can't answer. π meets the other numbers (2.14, √2, −4, 0, e) in any
-   order. Talking to 3 plus at least 3 of the others (`NEEDED` in the level file)
-   switches off the last force field to the warp gate. The map scrolls, glowing force
-   fields mark the reachable area, and a map strip in the sidebar shows which areas are open.
+   learns to move, then H. **13** calls out and teaches Enter, then asks π who they
+   are, and π can't answer. The other numbers (2.14, √2, −4, 0, e) are hidden around the
+   map, met in any order. Talking to 13 plus at least 3 of the others (`NEEDED` in the level
+   file) is followed, a moment later, by part of the last nebula wall exploding to open the way
+   to the warp gate (the first wall does the same soon after the help screen is opened). The
+   layout is an ASCII map at the top of `src/levels/level0-wakeup.js`. It is bigger than the
+   screen in both directions (the camera scrolls), with winding passages and a few dead ends.
 1. **Orbit Walk** (circumference ÷ diameter) — **1** explains the method. 3 orbits of
    growing size. π walks along grid lines (up/down/left/right) from a launch pad round
    the dashed orbit and back, then flies the **diameter** between two beacons (it must
@@ -75,6 +77,19 @@ debug menu's demo statistics are the only exception.
    crystals add, ice crystals subtract. Live π value, Leibniz sum and a convergence
    chart (no "true π" line). The warp gate opens after **6 terms** (2 then congratulates
    you automatically). You can carry on up to **20 terms**, after which 2 is out of crystals.
+3. **The Asteroid Belt** (random sampling) — **3** explains the method. A square force
+   field with a circle inside it sits in the middle; the map is ringed by an asteroid belt.
+   Three marked safe spots give ×1, ×10 or ×100 rocks (Enter to pick up). Enter next to the
+   force field throws everything carried. Each rock's final resting place is a uniformly random
+   point taken from a pre-generated stream (the flight/bounce is just for show). **C** calculates
+   π ≈ 4 × in circle ÷ in square at any time and adds it to the tracker. A calculation with
+   ≥ **100** asteroids opens the warp gate. R clears the force field.
+4. **The Polygon Projector** (Archimedes) — **4** gives a step-by-step demonstration
+   (dialogue docked at the bottom so the drawing stays visible): circle → hexagon inside →
+   triangles → right-angled half-triangle → formula → polygon outside. At the projector the
+   player picks n (3–100), works out the angle 180° ÷ n, then n × sin(angle) (inside) and
+   optionally n × tan(angle) (outside); sin/tan values are given. A zoomed inset shows one side
+   against the arc. Trying a polygon with ≥ **10** sides opens the warp gate. R replays the demo.
 
 ## Debug
 
@@ -82,7 +97,8 @@ debug menu's demo statistics are the only exception.
   part, run demo sessions (simulated players → range of π per stage), unlock all
   missions, force the warp gate open, view or reset save data.
 - URL jumps (level = level number): `index.html?level=0&step=meet`,
-  `index.html?level=1&stage=3`, `index.html?level=2&part=5`.
+  `index.html?level=1&stage=3`, `index.html?level=2&part=5`, `index.html?level=3`.
+  Levels 3 and 4 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried).
 - Progress, tracker, learned controls and debug settings are saved in the
   browser's localStorage ("Reset save data" in the debug menu starts over).
 - Settings: `game.config.js`.
@@ -117,13 +133,25 @@ src/
     debug.js          debug menu + demo sessions
     talk.js           plays interactions from npc_dialogue.js
     fractions.js      reusable fraction-wedge delivery mechanic
+    boundary.js       shaped, themed map edge (rounded corners; nebula / ring / asteroids)
     utils.js
   levels/
     index.js          level registry — add new levels here
     level0-wakeup.js
     level1-orbits.js
     level2-forge.js
+    level3-asteroids.js
+    level4-polygons.js
 ```
+
+## Map boundaries
+
+Every map has a shaped edge rather than a plain rectangle (`src/core/boundary.js`): the
+walkable area is a rounded rectangle, the cut-off corners are blocked, and the edge is
+decorated per level. The look is set in `assets/theme.js` → `LEVEL_STYLES[...].boundary`
+(`kind`: `nebula`, `ring` or `asteroids`, plus colours, glow and corner radius). A stage can
+tweak it with `boundary: { thickness, radius, clear }` or switch it off with `boundary: false`
+(Level 3 uses `thickness: 1` so the asteroid belt is a full square thick).
 
 ## Adding a level
 

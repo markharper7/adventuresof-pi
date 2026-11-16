@@ -16,7 +16,7 @@
 // Who can speak. `sprite` is a key into SPRITES in assets/theme.js.
 export const CHARACTERS = {
   pi: { name: 'π', sprite: 'player' },
-  three: { name: '3', sprite: 'three' },
+  thirteen: { name: '13', sprite: 'thirteen' },
   twoPointOneFour: { name: '2.14', sprite: 'twoPointOneFour' },
   rootTwo: { name: '√2', sprite: 'rootTwo' },
   minusFour: { name: '−4', sprite: 'minusFour' },
@@ -24,6 +24,8 @@ export const CHARACTERS = {
   e: { name: 'e', sprite: 'e' },
   one: { name: '1', sprite: 'one' },
   two: { name: '2', sprite: 'two' },
+  three: { name: '3', sprite: 'three' },
+  four: { name: '4', sprite: 'four' },
 };
 
 export const DIALOGUE = {
@@ -43,10 +45,10 @@ export const DIALOGUE = {
       },
     ],
 
-    // 3 calls out when π first comes near (this teaches the Enter key).
-    threeCallsOut: [
+    // 13 calls out when π first comes near (this teaches the Enter key).
+    thirteenCallsOut: [
       {
-        three: [
+        thirteen: [
           'You there! You look shy.',
           'Come, let me show you how to interact with other numbers.',
           "Walk up to me and press 'Enter'",
@@ -54,18 +56,18 @@ export const DIALOGUE = {
       },
     ],
 
-    // π walks up to 3 and presses Enter for the first time.
-    threeIntroduction: [
+    // π walks up to 13 and presses Enter for the first time.
+    thirteenIntroduction: [
       {
-        three: [
+        thirteen: [
           'There you go, simple. Now with the ice broken, let me introduce myself.',
-          'I am the number three. Positive. Rational. Integer. Prime.',
+          'I am the number thirteen. Positive. Rational. Integer. Prime.',
           "It's a pleasure to meet you. And you are...?",
         ],
       },
       { pi: ["Umm... I'm not sure... I can't remember..."] },
       {
-        three: [
+        thirteen: [
           'Oh dear.',
           'Oh dear, oh dear.',
           "I'm not sure I can have a civilised conversation with someone who doesn't even know who they are.",
@@ -74,8 +76,8 @@ export const DIALOGUE = {
       },
     ],
 
-    // Talking to 3 again afterwards.
-    threeAgain: [{ three: ['Any luck remembering who you are yet?'] }],
+    // Talking to 13 again afterwards.
+    thirteenAgain: [{ thirteen: ['Any luck remembering who you are yet?'] }],
 
     // The other numbers, met in any order. Talk to enough of them to open the way to Level 1.
     meet: {
@@ -228,5 +230,144 @@ export const DIALOGUE = {
         ],
       },
     ],
+  },
+
+  // =========================================================================
+  // LEVEL 3 — The Asteroid Belt (random sampling)
+  // PLACEHOLDER dialogue — npc_dialogue.md has no Level 3 section yet.
+  // =========================================================================
+  level3: {
+    // First time π talks to 3.
+    intro: [
+      {
+        three: [
+          "Hello! I'm 3. Thirteen told me about you. Pi, isn't it?",
+          "Well, a name is a start. Now you need your value.",
+          'See that square force field? There is a circle drawn inside it, touching all four sides.',
+          'Throw asteroids into the square and they land at random. Some end up in the circle, some in the corners.',
+          "The fraction that land in the circle should match the circle's area divided by the square's area.",
+          'The asteroid belt around the edge is far too dangerous to touch. Except the smallest rocks. I have marked three safe spots.',
+          'Pick some up, walk up to the force field and throw them in. Then press C whenever you want to count up and calculate.',
+        ],
+      },
+    ],
+
+    // Talking to 3 before anything has been thrown.
+    nothingThrownYet: [{ three: ['Go on then. Look for the marked spots in the asteroid belt.'] }],
+
+    // Talking to 3 after throwing but before calculating.
+    notCalculatedYet: [{ three: ['Press C whenever you like to count up the asteroids and calculate.'] }],
+
+    // After the first calculation, if fewer than the unlock number of asteroids were thrown. {value}, {total}.
+    firstCalculation: [
+      {
+        three: [
+          '{value}, from only {total} asteroids. Hmm.',
+          'Do you think throwing more would help? Try one of the bigger piles.',
+        ],
+      },
+    ],
+
+    // Said automatically the first time a calculation uses enough asteroids to open the warp gate. {value}, {total}.
+    enoughThrown: [
+      {
+        three: [
+          'Now that is more like it. {total} asteroids gives {value}.',
+          'Do you think more asteroids would get you closer? Do you think this is a high or a low estimate?',
+          'Keep throwing for as long as you like. The warp gate is open whenever you are ready.',
+        ],
+      },
+    ],
+
+    // Talking to 3 after the warp gate is open.
+    again: [{ three: ['Every asteroid lands at random. The more you throw, the better your estimate... usually.'] }],
+  },
+
+  // =========================================================================
+  // LEVEL 4 — The Polygon Projector (Archimedes)
+  // PLACEHOLDER dialogue — npc_dialogue.md has no Level 4 section yet.
+  // Each part of `demo` is shown with the drawing updated to match it.
+  // =========================================================================
+  level4: {
+    demo: {
+      // Just the circle.
+      circle: [
+        {
+          four: [
+            "Ah, Pi! I'm 4. Four equal sides and four right angles. Perfectly square, if I say so myself.",
+            'A long time ago a Greek mathematician called Archimedes found your value by trapping a circle between straight lines.',
+            'Here is a circle with radius 1. So its diameter is 2.',
+            'Its circumference divided by its diameter would be your value. But curves are very hard to measure!',
+          ],
+        },
+      ],
+      // A hexagon drawn inside the circle.
+      inside: [
+        {
+          four: [
+            'So let us fit a hexagon inside it. Six straight sides, with every corner touching the circle.',
+            'Straight lines are easy to measure. Its perimeter is a little shorter than the circumference.',
+          ],
+        },
+      ],
+      // The hexagon split into triangles.
+      triangles: [
+        {
+          four: [
+            'Split the hexagon into triangles, one for each side, all meeting in the middle.',
+            'Two sides of every triangle are the radius: 1.',
+          ],
+        },
+      ],
+      // One triangle cut in half to make a right-angled triangle.
+      halve: [
+        {
+          four: [
+            'Now cut one triangle in half. We get a right-angled triangle!',
+            'The angle in the middle is 360° ÷ 6 ÷ 2 = 30°.',
+            'The longest side is the radius, 1. The side opposite our angle is half of one side of the hexagon.',
+            'And that half side is r × sin(30°).',
+          ],
+        },
+      ],
+      // The formula.
+      formula: [
+        {
+          four: [
+            'So one whole side is 2 × r × sin(angle), and there are n sides.',
+            'Perimeter ÷ diameter = n × 2 × r × sin(angle) ÷ 2r = n × sin(180° ÷ n).',
+            'For the hexagon: 6 × sin(30°) = 6 × 0.5 = 3.',
+          ],
+        },
+      ],
+      // A polygon drawn outside the circle too.
+      outside: [
+        {
+          four: [
+            'We can also draw a polygon outside the circle, with each side just touching it.',
+            'That works the same way, but with tan instead of sin: n × tan(180° ÷ n).',
+            'Which one do you think is too small, and which too big?',
+            'Use my polygon projector to try more sides. Try at least one polygon with 10 or more sides.',
+          ],
+        },
+      ],
+    },
+
+    // Talking to 4 before a polygon with at least 10 sides has been tried.
+    howAreYouGettingOn: [{ four: ['Have you tried a polygon with at least 10 sides yet? Use the polygon projector.'] }],
+
+    // Said automatically the first time a polygon with 10+ sides is worked out. {n}, {value}.
+    tenSidesDone: [
+      {
+        four: [
+          '{n} sides gives {value}. That is looking a lot more like a circle!',
+          'What happens as you keep adding sides? Is there a value that the polygons can never quite reach?',
+          'Try as many as you like, up to 100 sides. The warp gate is open whenever you are ready.',
+        ],
+      },
+    ],
+
+    // Talking to 4 after that.
+    again: [{ four: ['More sides, tighter squeeze. Your value is trapped between the polygons inside and outside.'] }],
   },
 };

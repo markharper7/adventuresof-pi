@@ -44,30 +44,30 @@ At this point the user should be shown how to move around the map using up, down
 
 After passing this movement tutorial, the user should be free to explore. They will then discover other number characters to talk to. 
 
-3:
+13:
 - You there! You look shy.
 - Come, let me show you how to interact with other numbers.
 - Walk up to me and press 'Enter'
 
 Pi does this 
 
-3:
+13:
 - There you go, simple. Now with the ice broken, let me introduce myself.
-- I am the number three. Positive. Rational. Integer. Prime. 
+- I am the number thirteen. Positive. Rational. Integer. Prime. 
 - It's a pleasure to meet you. And you are...?
 
 At this point, pi realises they don't know and can't answer. 
 pi: 
 - Umm... I'm not sure... I can't remember...
 
-3:
+13:
 - Oh dear. 
 - Oh dear, oh dear.
 - I'm not sure I can have a civilised conversation with someone who doesn't even know who they are.
 - You could be a ruffian. Or a thug. And neither of us would know!
 
-If the user comes back to 3, 3 should say:
-3:
+If the user comes back to 13, 13 should say:
+13:
 - Any luck remembering who you are yet?
 
 Otherwise, pi can carry on finding other characters. In any order:

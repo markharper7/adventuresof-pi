@@ -39,6 +39,7 @@ This game wants to start with easiest methods first and also the ones that can b
 All levels should have a similar style and share as much generic code as possible such as the grid layout, sprites, 
 help controls and popups. The UI visual style of the game should be able to be changed easily across all levels.
 
+When having a level selector menu, let's nest stages within levels so you don't see them all by default. If you click on a level, then you can choose a stage to start at.
 
 ## NPC dialogue
 Each level will have at least one NPC. I want to be in control of this dialogue as this is the how I can inject my own ways of describing the mathematical concepts and getting the user to think
@@ -54,15 +55,16 @@ Do not add extra dialogue in a level if dialogue exists.
 You can make up dialogue as placeholders when creating levels where there is no NPC dialogue yet specified. 
 
 ## Requirements across all levels
-1. The should live in a directory such as 'game'. If creating an entirely new demo, we could create a new directory alongside existing one(s) such as 'game2' and 'game3'. This is particularly useful when brainstorming ideas rather than iterating on a more polished idea
-2. There should be a makefile which can be used to run, stop and restart the game
-3. The user should be able to press 'h' to bring up the 'help' screen which shows the controls. The 'h' should be visible somehow like a key 
-4. Can we code this in a flexible way so new levels can be added easily with minimal code replication 
-5. Can the visuals of square tiles and characters be in some sort of 'assets' directory where we can easily update them in the future. Visuals should be separate to functionality. 
-6. The user should be able to retry levels and sections if they want to and only move on when they want to. The game shouldn't freeze when the user reaches the end of existing levels. The number NPCs could encourage the user to try again with a slightly different path / approach if the user goes and talks to them again.
-7. Keep track of the minimum and maximum values of pi found so far and this should likely be kept across levels. But the user be able to enter this themselves so they can ignore / override bad answers. 
-8. An initial intro screen to set the scene and tell the user the controls as well as 'h' to view controls again
-9. Makefile commands and other commands should work for linux and git bash rather than windows powershell
+1. The name of the game is 'Adventures of Pi'
+2. The game should live in a directory such as 'game'. If creating an entirely new demo, we could create a new directory alongside existing one(s) such as 'game2' and 'game3'. This is particularly useful when brainstorming ideas rather than iterating on a more polished idea
+3. There should be a makefile which can be used to run, stop and restart the game
+4. The user should be able to press 'h' to bring up the 'help' screen which shows the controls. The 'h' should be visible somehow like a key 
+5. Can we code this in a flexible way so new levels can be added easily with minimal code replication 
+6. Can the visuals of square tiles and characters be in some sort of 'assets' directory where we can easily update them in the future. Visuals should be separate to functionality. 
+7. The user should be able to retry levels and sections if they want to and only move on when they want to. The game shouldn't freeze when the user reaches the end of existing levels. The number NPCs could encourage the user to try again with a slightly different path / approach if the user goes and talks to them again.
+8. Keep track of the minimum and maximum values of pi found so far and this should likely be kept across levels. But the user be able to enter this themselves so they can ignore / override bad answers. 
+9. An initial intro screen to set the scene and tell the user the controls as well as 'h' to view controls again
+10. Makefile commands and other commands should work for linux and git bash rather than windows powershell
 
 ## Debug Requirements across all levels
 Can we have a separate debug menu with its own shortcut which can be used to jump to a particular part of the game. This may need some sort of settings file or variables which it creates and edits as the game is played.

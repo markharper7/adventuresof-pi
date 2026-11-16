@@ -5,15 +5,18 @@
 // A level module (see src/levels/) provides stages. A stage object looks like:
 // {
 //   title, cols, rows, anchor: 'tile' | 'vertex', playerStart: {x, y},
-//   viewCols?,                            // narrower than cols = scrolling map
+//   viewCols?, viewRows?,                 // narrower than cols / shorter than rows = scrolling map
+//   paintBackground(g, X, Y, T),          // optional: static scenery painted once into the cached background
 //   npcs: [{ name, sprite, x, y, talk: async () => {} }],
 //   gate: { x, y, isOpen: () => bool, lockedText },
 //   help: 'html',                         // extra help shown on the H screen
 //   blocked(x, y) -> bool,                // optional impassable squares
+//   boundary: { thickness, radius, clear } | false,  // optional tweaks to the shaped edge (core/boundary.js)
 //   canMove() -> bool,                    // optional (e.g. while π is asleep)
 //   onEnter() -> Promise,                 // optional, runs once when the stage starts
 //   onEvent(name) -> Promise,             // optional: 'help', 'tracker-set', ...
 //   onMove(from, to, dx, dy),             // optional
+//   tick(now),                            // optional: called every frame / 100 ms, even during popups
 //   onAction() -> Promise<bool>,          // Enter pressed (return true if handled)
 //   onRestart() -> Promise,               // R pressed
 //   hud() -> 'html',                      // sidebar contents
@@ -30,6 +33,8 @@ import { loadSprites } from './assets.js';
 import { openDebugMenu } from './debug.js';
 import { introHtml, helpHtml, hudKeysHtml, trackerHtml, trackerEditorHtml, endHtml, SKILL_NAMES, fmtShort } from './screens.js';
 import { cheb, parseNum, clamp } from './utils.js';
+import { makeBoundary } from './boundary.js';
+import { LEVEL_STYLES } from '../../assets/theme.js';
 
 const $ = (id) => document.getElementById(id);
 /** Controls every player has once they're past Level 0. */
@@ -133,10 +138,18 @@ export class Game {
     this.events = [];
     if (level.number >= 1) CORE_SKILLS.forEach((k) => learnSkill(k)); // past the tutorial: all basics known
     const s = (this.stage = level.createStage(this, si, opts));
+    const styleSpec = (LEVEL_STYLES[s.style || level.style] || {}).boundary;
+    this.boundary =
+      styleSpec && s.boundary !== false
+        ? makeBoundary({ cols: s.cols, rows: s.rows, anchor: s.anchor, spec: { ...styleSpec, ...(s.boundary || {}) }, seed: (li + 1) * 31 + si })
+        : null;
     this.renderer.configure({
+      boundary: this.boundary,
       cols: s.cols,
       rows: s.rows,
       viewCols: s.viewCols || s.cols,
+      viewRows: s.viewRows || s.rows,
+      paint: s.paintBackground || null,
       anchor: s.anchor,
       style: s.style || level.style,
       seed: (li + 1) * 31 + si,
@@ -146,7 +159,7 @@ export class Game {
     p.y = p.fromY = s.playerStart.y;
     p.moveStart = 0;
     p.facing = 1;
-    this.renderer.follow(p.x, true);
+    this.renderer.follow(p.x, p.y, true);
     this.queuedMove = null;
     this.pendingEnter = s.onEnter ? s : null;
     save.last = { level: li, stage: si };
@@ -338,6 +351,7 @@ export class Game {
 
   isBlocked(x, y) {
     if (this.stage.npcs.some((n) => n.x === x && n.y === y)) return true;
+    if (this.boundary && this.boundary.blocked(x, y)) return true;
     return this.stage.blocked ? this.stage.blocked(x, y) : false;
   }
 
@@ -483,23 +497,37 @@ export class Game {
     this.emit('tracker-set');
   }
 
+  /**
+   * Mission select: levels first. Picking a level with more than one stage opens
+   * a second menu of its stages; a single-stage level starts straight away.
+   */
   async missionSelect() {
-    const options = [];
-    LEVELS.forEach((lv, li) => {
-      for (let si = 0; si < lv.stageCount; si++) {
+    for (;;) {
+      const options = LEVELS.map((lv, li) => {
+        const stages = [...Array(lv.stageCount).keys()];
+        const unlocked = stages.some((si) => isStageUnlocked(LEVELS, li, si));
+        const done = stages.filter((si) => isStageDone(lv.id, si)).length;
+        const hint = !unlocked ? '🔒 locked' : done === lv.stageCount ? '✓ complete' : lv.stageCount > 1 ? `${done}/${lv.stageCount} stages ▸` : '';
+        return { label: lv.title, hint, value: li, disabled: !unlocked };
+      });
+      options.push({ label: 'Close', value: null });
+      const li = await ui.choice({ title: 'Mission select', text: 'Replay any mission you have unlocked.', options, cancelValue: null });
+      if (li === null || li === undefined) return;
+      const lv = LEVELS[li];
+      if (lv.stageCount === 1) return this.loadStage(li, 0);
+      const stageOpts = Array.from({ length: lv.stageCount }, (_, si) => {
         const unlocked = isStageUnlocked(LEVELS, li, si);
-        const done = isStageDone(lv.id, si);
-        options.push({
-          label: lv.stageCount > 1 ? `${lv.title} — ${lv.stageName(si)}` : lv.title,
-          hint: done ? '✓ complete' : unlocked ? '' : '🔒 locked',
-          value: { li, si },
+        return {
+          label: `Stage ${si + 1}: ${lv.stageName(si)}`,
+          hint: isStageDone(lv.id, si) ? '✓ complete' : unlocked ? '' : '🔒 locked',
+          value: si,
           disabled: !unlocked,
-        });
-      }
-    });
-    options.push({ label: 'Close', value: null });
-    const v = await ui.choice({ title: 'Mission select', text: 'Replay any mission you have unlocked.', options, cancelValue: null });
-    if (v) this.loadStage(v.li, v.si);
+        };
+      });
+      stageOpts.push({ label: '◂ Back to levels', value: 'back' });
+      const si = await ui.choice({ title: lv.title, text: 'Choose a stage to start at.', options: stageOpts, cancelValue: 'back' });
+      if (si !== 'back') return this.loadStage(li, si);
+    }
   }
 
   // ---------------------------------------------------------------- loop + drawing
@@ -512,6 +540,7 @@ export class Game {
 
   /** Start a stage's intro / handle queued events / do a queued step, when nothing else is happening. */
   pump(t = performance.now()) {
+    if (this.stage && this.stage.tick) this.stage.tick(t); // runs even while a popup is open
     if (this.busy || ui.isOpen() || !this.stage) return;
     if (this.pendingEnter) {
       const s = this.pendingEnter;
@@ -541,8 +570,9 @@ export class Game {
     const r = this.renderer, s = this.stage;
     if (!s) return;
     const pp = this.playerRenderPos(t);
-    r.follow(pp.x);
+    r.follow(pp.x, pp.y);
     r.clear();
+    if (this.boundary) this.boundary.drawLive(r, t);
     if (s.drawFloor) s.drawFloor(r, t);
 
     if (s.gate) {

@@ -24,18 +24,29 @@ export class Renderer {
     this.dpr = 1;
     this.bg = null;
     this.camX = 0;     // camera offset in CSS pixels (scrolling maps)
+    this.camY = 0;
     this.viewCols = 20;
+    this.viewRows = 14;
+    this.paintExtra = null;
   }
 
-  /** viewCols < cols makes a scrolling map: the camera follows π horizontally. */
-  configure({ cols, rows, viewCols, anchor = 'tile', style, seed = 1 }) {
+  /**
+   * viewCols < cols / viewRows < rows makes a scrolling map: the camera follows π.
+   * paint(g, X, Y, T) optionally paints a stage's static scenery into the cached background.
+   */
+  configure({ cols, rows, viewCols, viewRows, anchor = 'tile', style, seed = 1, boundary = null, paint = null }) {
+    this.boundary = boundary; // shaped edge from core/boundary.js (or null for a plain rectangle)
+    this.paintExtra = paint;
     this.cols = cols;
     this.rows = rows;
     this.viewCols = Math.min(cols, viewCols || cols);
+    this.viewRows = Math.min(rows, viewRows || rows);
     this.anchor = anchor;
     this.seed = seed;
     this.style = LEVEL_STYLES[style] || Object.values(LEVEL_STYLES)[0];
     this.camX = 0;
+    this.camY = 0;
+    this.focusX = this.focusY = undefined;
     this.resize();
   }
 
@@ -43,18 +54,19 @@ export class Renderer {
     const wrap = this.canvas.parentElement;
     const W = Math.max(200, wrap.clientWidth - 12);
     const H = Math.max(150, wrap.clientHeight - 12);
-    const T = Math.max(10, Math.floor(Math.min(W / (this.viewCols + 1), H / (this.rows + 1))));
+    const T = Math.max(10, Math.floor(Math.min(W / (this.viewCols + 1), H / (this.viewRows + 1))));
     this.T = T;
     this.margin = Math.round(T / 2);
     this.width = T * this.viewCols + this.margin * 2;   // visible canvas
     this.worldWidth = T * this.cols + this.margin * 2;  // whole map
-    this.height = T * this.rows + this.margin * 2;
+    this.height = T * this.viewRows + this.margin * 2;  // visible canvas
+    this.worldHeight = T * this.rows + this.margin * 2; // whole map
     this.dpr = window.devicePixelRatio || 1;
     this.canvas.width = Math.round(this.width * this.dpr);
     this.canvas.height = Math.round(this.height * this.dpr);
     this.canvas.style.width = this.width + 'px';
     this.canvas.style.height = this.height + 'px';
-    if (this.focusX !== undefined) this.follow(this.focusX, true);
+    if (this.focusX !== undefined) this.follow(this.focusX, this.focusY, true);
     this.buildBackground();
   }
 
@@ -62,27 +74,32 @@ export class Renderer {
     return this.anchor === 'vertex' ? 0 : 0.5;
   }
   gx(x) { return this.margin + x * this.T - this.camX; }
-  gy(y) { return this.margin + y * this.T; }
+  gy(y) { return this.margin + y * this.T - this.camY; }
   ax(x) { return this.gx(x + this.off); }
   ay(y) { return this.gy(y + this.off); }
 
-  /** Move the camera towards anchored grid x (snap = jump straight there). */
-  follow(focusX, snap = false) {
+  /** Move the camera towards anchored grid position (focusX, focusY) (snap = jump straight there). */
+  follow(focusX, focusY = 0, snap = false) {
     this.focusX = focusX;
-    const maxCam = (this.cols - this.viewCols) * this.T;
-    if (maxCam <= 0) { this.camX = 0; return; }
-    const target = Math.max(0, Math.min(maxCam, (focusX + this.off) * this.T - (this.viewCols * this.T) / 2));
-    this.camX = snap ? target : this.camX + (target - this.camX) * 0.15;
-    if (Math.abs(target - this.camX) < 0.5) this.camX = target;
+    this.focusY = focusY;
+    const axis = (cam, focus, n, view) => {
+      const max = (n - view) * this.T;
+      if (max <= 0) return 0;
+      const target = Math.max(0, Math.min(max, (focus + this.off) * this.T - (view * this.T) / 2));
+      const next = snap ? target : cam + (target - cam) * 0.15;
+      return Math.abs(target - next) < 0.5 ? target : next;
+    };
+    this.camX = axis(this.camX, focusX, this.cols, this.viewCols);
+    this.camY = axis(this.camY, focusY, this.rows, this.viewRows);
   }
 
   buildBackground() {
     const c = document.createElement('canvas');
     c.width = Math.round(this.worldWidth * this.dpr);
-    c.height = this.canvas.height;
+    c.height = Math.round(this.worldHeight * this.dpr);
     const g = c.getContext('2d');
     g.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    const s = this.style, w = this.worldWidth, h = this.height, T = this.T;
+    const s = this.style, w = this.worldWidth, h = this.worldHeight, T = this.T;
 
     const grad = g.createLinearGradient(0, 0, 0, h);
     grad.addColorStop(0, s.bgTop);
@@ -100,7 +117,7 @@ export class Renderer {
     }
 
     const rng = mulberry32(this.seed * 7919 + 13);
-    const starCount = Math.round((s.stars || 0) * (this.cols / this.viewCols));
+    const starCount = Math.round((s.stars || 0) * (this.cols / this.viewCols) * (this.rows / this.viewRows));
     for (let i = 0; i < starCount; i++) {
       const x = rng() * w, y = rng() * h;
       const r = rng() < 0.92 ? rng() * 1.1 + 0.3 : rng() * 1.6 + 1.2;
@@ -113,6 +130,10 @@ export class Renderer {
     g.globalAlpha = 1;
 
     const x0 = this.margin, y0 = this.margin, bw = this.cols * T, bh = this.rows * T;
+    const X = (x) => x0 + x * T, Y = (y) => y0 + y * T;
+    const bd = this.boundary;
+    g.save();
+    if (bd) bd.clip(g, X, Y, T); // board + grid only inside the boundary's shape
     if (s.board) {
       g.fillStyle = s.board;
       g.fillRect(x0, y0, bw, bh);
@@ -150,8 +171,11 @@ export class Renderer {
           g.fill();
         }
     }
-    // glowing edge of the map, so the boundary is always visible
-    if (s.border) {
+    g.restore();
+    if (bd) bd.paint(g, X, Y, T);
+    if (this.paintExtra) this.paintExtra(g, X, Y, T); // the stage's static scenery
+    // glowing edge of the map, so the boundary is always visible (shaped boundaries draw their own)
+    if (s.border && !bd) {
       g.save();
       g.strokeStyle = s.border;
       g.lineWidth = Math.max(2, T * 0.08);
@@ -168,8 +192,8 @@ export class Renderer {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (this.bg) {
-      const sx = Math.round(this.camX * this.dpr);
-      ctx.drawImage(this.bg, sx, 0, this.canvas.width, this.canvas.height, 0, 0, this.canvas.width, this.canvas.height);
+      const sx = Math.round(this.camX * this.dpr), sy = Math.round(this.camY * this.dpr);
+      ctx.drawImage(this.bg, sx, sy, this.canvas.width, this.canvas.height, 0, 0, this.canvas.width, this.canvas.height);
     }
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
   }

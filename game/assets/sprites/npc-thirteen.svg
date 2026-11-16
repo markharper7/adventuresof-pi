@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- 13: a narrow '1' and '3' side by side, sharing one face across the top -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- outline -->
+    <path d="M15 12 L15 55 M15 12 L7 19" stroke="#5c3a0f" stroke-width="13"/>
+    <path d="M30 11 H53 L42 26 Q58 27 57 42 Q56 56 43 56 Q34 56 29 49" stroke="#5c3a0f" stroke-width="12"/>
+    <!-- body -->
+    <path d="M15 12 L15 55 M15 12 L7 19" stroke="#ffc66b" stroke-width="8"/>
+    <path d="M30 11 H53 L42 26 Q58 27 57 42 Q56 56 43 56 Q34 56 29 49" stroke="#ffc66b" stroke-width="7"/>
+    <!-- shine -->
+    <path d="M15 14 L15 53 M30 11 H53" stroke="#fff0d6" stroke-width="2" opacity="0.6" transform="translate(-1.2 -2)"/>
+  </g>
+  <!-- eyes -->
+  <circle cx="36" cy="11" r="3.8" fill="#ffffff" stroke="#5c3a0f" stroke-width="1"/>
+  <circle cx="36.8" cy="11.5" r="2.0" fill="#0b1640"/>
+  <circle cx="45" cy="11" r="3.8" fill="#ffffff" stroke="#5c3a0f" stroke-width="1"/>
+  <circle cx="45.8" cy="11.5" r="2.0" fill="#0b1640"/>
+</svg>

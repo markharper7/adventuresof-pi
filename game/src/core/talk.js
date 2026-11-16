@@ -7,12 +7,12 @@ export { DIALOGUE, CHARACTERS };
 /** Replace {name} placeholders with values from vars (unknown ones are left as-is). */
 export const fill = (line, vars = {}) => line.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
 
-/** Play one interaction: an array of { speaker: [lines] } speeches, in order. */
-export async function play(interaction, vars = {}) {
+/** Play one interaction: an array of { speaker: [lines] } speeches, in order. dock: keep the canvas visible. */
+export async function play(interaction, vars = {}, { dock = false } = {}) {
   for (const speech of interaction) {
     for (const [who, lines] of Object.entries(speech)) {
       const c = CHARACTERS[who] || { name: who };
-      await ui.dialog({ speaker: c.name, sprite: c.sprite, lines: lines.map((l) => fill(l, vars)) });
+      await ui.dialog({ speaker: c.name, sprite: c.sprite, lines: lines.map((l) => fill(l, vars)), dock });
     }
   }
 }

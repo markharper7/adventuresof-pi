@@ -9,6 +9,7 @@ export const SPRITES = {
   player: 'assets/sprites/pi-character.svg',
   // number characters (names and lines are in npc_dialogue.js)
   three: 'assets/sprites/npc-three.svg',
+  thirteen: 'assets/sprites/npc-thirteen.svg',
   twoPointOneFour: 'assets/sprites/npc-two-point-one-four.svg',
   rootTwo: 'assets/sprites/npc-root-two.svg',
   minusFour: 'assets/sprites/npc-minus-four.svg',
@@ -16,6 +17,7 @@ export const SPRITES = {
   e: 'assets/sprites/npc-e.svg',
   one: 'assets/sprites/npc-one.svg',
   two: 'assets/sprites/npc-two.svg',
+  four: 'assets/sprites/npc-four.svg',
   gate: 'assets/sprites/warp-gate.svg',
   pad: 'assets/sprites/launch-pad.svg',
   planetMoon: 'assets/sprites/planet-moon.svg',
@@ -27,6 +29,9 @@ export const SPRITES = {
 export const LEVEL_STYLES = {
   // Level 0 — a quiet violet/teal nebula where π wakes up
   wake: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    // no glow line here: the soft nebula edge is enough. The walls between areas reuse these colours.
+    boundary: { kind: 'nebula', radius: 3, colors: ['rgba(150,90,255,0.6)', 'rgba(40,200,190,0.5)', 'rgba(110,140,255,0.55)'] },
     bgTop: '#07061a',
     bgBottom: '#10203a',
     nebulae: [
@@ -42,10 +47,11 @@ export const LEVEL_STYLES = {
     grid: 'rgba(170,150,255,0.14)',
     gridDot: null,
     border: 'rgba(140,220,255,0.75)',
-    barrier: 'rgba(120,210,255,0.85)',
-    barrierFill: 'rgba(80,170,255,0.16)',
     pod: '#c9d4f5',
     podGlass: '#7fe0ff',
+    // nebula walls between the areas of Level 0: darker and denser than the map edge
+    wallColors: ['rgba(90,50,190,0.85)', 'rgba(20,110,120,0.8)', 'rgba(60,70,170,0.85)', 'rgba(120,60,170,0.8)'],
+    wallShade: 'rgba(6,4,20,0.92)',
     rock: '#4a4566',
     accent: '#9fe8ff',
     accentGlow: 'rgba(159,232,255,0.85)',
@@ -56,6 +62,8 @@ export const LEVEL_STYLES = {
   },
   // Level 1 — deep blue starfield, grid lines you walk along
   orbit: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    boundary: { kind: 'ring', radius: 4, colors: ['#cfe3ff', '#ffffff', '#9fc4ff', '#ffe9c4'], glow: 'rgba(127,224,255,0.55)', dashed: true },
     border: 'rgba(127,224,255,0.6)',
     bgTop: '#040716',
     bgBottom: '#0c1642',
@@ -84,6 +92,8 @@ export const LEVEL_STYLES = {
   },
   // Level 2 — warm nebula around a star forge, chequered deck tiles
   forge: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    boundary: { kind: 'nebula', radius: 3.5, colors: ['rgba(255,120,40,0.45)', 'rgba(255,190,80,0.35)', 'rgba(190,60,200,0.4)'], glow: 'rgba(255,179,71,0.6)' },
     border: 'rgba(255,179,71,0.6)',
     bgTop: '#10041a',
     bgBottom: '#2b0b2a',
@@ -108,6 +118,85 @@ export const LEVEL_STYLES = {
     bubble: 'rgba(40,14,40,0.92)',
     bubbleBorder: '#ffb347',
   },
+  // Level 3 — dusty asteroid belt ringing the map, a square force field in the middle
+  belt: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    boundary: { kind: 'asteroids', radius: 4, colors: ['#a8988a', '#7d6f66', '#463c38'], glow: 'rgba(255,207,138,0.35)' },
+    border: 'rgba(200,170,130,0.45)',
+    bgTop: '#060914',
+    bgBottom: '#1a1426',
+    nebulae: [
+      { x: 0.2, y: 0.2, r: 0.45, color: 'rgba(200,120,60,0.16)' },
+      { x: 0.85, y: 0.75, r: 0.5, color: 'rgba(90,110,230,0.18)' },
+    ],
+    stars: 220,
+    starColors: ['#ffffff', '#ffe6cc', '#d6e2ff'],
+    board: 'rgba(30,22,40,0.25)',
+    tileA: 'rgba(255,255,255,0.02)',
+    tileB: null,
+    grid: 'rgba(220,190,150,0.10)',
+    gridDot: null,
+    accent: '#ffcf8a',
+    accentGlow: 'rgba(255,207,138,0.85)',
+    text: '#f3e9dc',
+    muted: 'rgba(240,225,205,0.6)',
+    bubble: 'rgba(36,26,40,0.92)',
+    bubbleBorder: '#ffcf8a',
+  },
+  // Level 4 — cool green observatory where polygons are projected around a circle
+  archimedes: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    boundary: { kind: 'ring', radius: 3.5, colors: ['#5fe0b0', '#c9ffe9', '#9fe8ff'], glow: 'rgba(95,224,176,0.55)', dashed: true },
+    border: 'rgba(95,224,176,0.55)',
+    bgTop: '#03100f',
+    bgBottom: '#0b1f33',
+    nebulae: [
+      { x: 0.65, y: 0.5, r: 0.5, color: 'rgba(60,200,160,0.14)' },
+      { x: 0.1, y: 0.15, r: 0.35, color: 'rgba(110,90,230,0.18)' },
+    ],
+    stars: 200,
+    starColors: ['#ffffff', '#d4fff0', '#d6e2ff'],
+    board: 'rgba(8,30,34,0.30)',
+    tileA: null,
+    tileB: null,
+    grid: 'rgba(120,230,200,0.10)',
+    gridDot: 'rgba(160,240,215,0.25)',
+    accent: '#5fe0b0',
+    accentGlow: 'rgba(95,224,176,0.85)',
+    text: '#dcfff4',
+    muted: 'rgba(200,240,228,0.6)',
+    bubble: 'rgba(8,34,34,0.92)',
+    bubbleBorder: '#5fe0b0',
+  },
+};
+
+// Asteroids and the force field (Level 3).
+export const ASTEROID_STYLE = {
+  rock: '#7d6f66',
+  rockLight: '#a8988a',
+  rockDark: '#463c38',
+  spotRing: 'rgba(255,207,138,0.85)',
+  field: 'rgba(120,200,255,0.9)',
+  fieldFill: 'rgba(80,160,255,0.08)',
+  circle: 'rgba(255,255,255,0.75)',
+  inside: '#ffcf5a',      // landed inside the circle
+  outside: '#7fa8ff',     // landed in a corner of the square, outside the circle
+  trail: 'rgba(255,220,170,0.6)',
+};
+
+// The polygon projector (Level 4).
+export const POLYGON_STYLE = {
+  circle: 'rgba(255,255,255,0.85)',
+  inside: '#ffcf5a',                  // inscribed polygon
+  insideFill: 'rgba(255,207,90,0.08)',
+  outside: '#5fe0b0',                 // circumscribed polygon
+  outsideFill: 'rgba(95,224,176,0.05)',
+  triangle: 'rgba(255,140,170,0.35)',
+  triangleEdge: '#ff8caa',
+  label: '#ffffff',
+  insetBg: 'rgba(4,14,20,0.8)',
+  console: '#2a5a6a',
+  consoleGlow: 'rgba(95,224,176,0.9)',
 };
 
 // Fraction pieces (Level 2 and any future fraction level).

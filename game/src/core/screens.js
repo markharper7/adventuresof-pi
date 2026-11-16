@@ -15,7 +15,7 @@ export const SKILL_NAMES = {
 
 const CONTROL_ROWS = [
   ['move', `${key('↑')}${key('↓')}${key('←')}${key('→')} or ${key('W')}${key('A')}${key('S')}${key('D')}`, 'Move one square: up, down, left or right'],
-  ['talk', `${key('Enter')} or ${key('Space')}`, 'Talk to numbers · use things · pick up · drop'],
+  ['talk', `${key('Enter')} or ${key('Space')}`, 'Talk to numbers · use things · pick up · drop · throw'],
   ['help', key('H'), 'Help — show the controls you know'],
   ['tracker', `${key('T')} or drag`, 'π tracker — drag values into MIN / MAX, or press T to type them'],
   ['missions', key('L'), 'Mission select — replay any unlocked mission'],

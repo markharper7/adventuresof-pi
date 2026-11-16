@@ -1,7 +1,7 @@
 // Shared popups used by every level. Each returns a Promise, so level code can
 // simply `await` a conversation or a question.
 //
-//   dialog({ speaker, sprite, lines })                     -> true when finished
+//   dialog({ speaker, sprite, lines, dock })               -> true when finished (dock: sit at the bottom, canvas visible)
 //   choice({ title, text, speaker, sprite, options, cancelValue }) -> chosen option.value
 //   panel({ title, html, buttons, closeKeys, wide })       -> clicked button value (null on close key)
 //   form({ title, html, fields, buttons, validate })       -> { button, values }
@@ -19,9 +19,9 @@ export function handleKey(e) {
   if (current && current.onKey) current.onKey(e);
 }
 
-function show(builder) {
+function show(builder, opts = {}) {
   return new Promise((resolve) => {
-    queue.push({ builder, resolve });
+    queue.push({ builder, resolve, opts });
     if (!current) openNext();
   });
 }
@@ -37,6 +37,7 @@ function openNext() {
   }
   root.hidden = false;
   root.innerHTML = '';
+  root.classList.toggle('dock-bottom', !!item.opts.dock); // docked: the canvas stays visible above
   const modal = { onKey: null, afterOpen: null };
   let closed = false;
   const close = (value) => {
@@ -73,7 +74,7 @@ function addButtons(row, buttons, onPick) {
   });
 }
 
-export function dialog({ speaker, sprite, lines }) {
+export function dialog({ speaker, sprite, lines, dock = false }) {
   return show((modal, close) => {
     let i = 0;
     const el = makeEl(
@@ -106,7 +107,7 @@ export function dialog({ speaker, sprite, lines }) {
     el.addEventListener('click', advance);
     render();
     return el;
-  });
+  }, { dock });
 }
 
 export function choice({ title, text, speaker, sprite, options, cancelValue }) {

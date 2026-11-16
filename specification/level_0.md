@@ -3,7 +3,13 @@
 Level 0 is the introduction to the game. It is not yet introducing any maths. Instead it is introducing the character, the basic controls and setting the scene
 
 ## Level 0 requirements
-1. The user is introduced to their 'pi' character in some way.
+1. The user is introduced to their 'pi' character in some way. Waking up and not knowing who they are. 
+
+See the NPC dialogue file as a lot of this will be driven by NPC dialogue. 
+
+Also let's spread the NPCs out a bit. The first one should be basically impossible to miss. Whereas the others could require the user to search for them a bit. As long as 3 out of the 5 NPCs are spoken to, level 1 is unlocked. But a user may enjoy searching for the others.
+
+The search should not be anything too crazy. Just out of sight of screen in a few directions. The edges of the map should not take very long to reach so it should be easy to find all NPCs if you want to. e.g. under a minute or 2 of just walking around the screen.
 
 ## Ideas - feel free to discuss as part of the plan phase
 - The initial UI could be the pi character waking up in some visually obvious way and realising they don't know who they are or what their value is. (Knowing your value is important to numbers). This sets the scene for the aim of the game and for the user to try to discover the value of pi which they will only realise later as they progress is a neverending task

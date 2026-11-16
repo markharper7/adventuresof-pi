@@ -10,5 +10,7 @@
 import level0 from './level0-wakeup.js';
 import level1 from './level1-orbits.js';
 import level2 from './level2-forge.js';
+import level3 from './level3-asteroids.js';
+import level4 from './level4-polygons.js';
 
-export const LEVELS = [level0, level1, level2];
+export const LEVELS = [level0, level1, level2, level3, level4];

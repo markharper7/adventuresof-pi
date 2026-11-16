@@ -58,17 +58,26 @@ export async function openDebugMenu(game) {
   }
 }
 
+/** Levels first; levels with more than one jump target open a second menu. */
 async function jumpMenu(game) {
-  const options = [];
-  game.levels.forEach((lv, li) => {
-    const jumps = lv.debugJumps
-      ? lv.debugJumps()
-      : Array.from({ length: lv.stageCount }, (_, si) => ({ label: `Stage ${si + 1}: ${lv.stageName(si)}`, si }));
-    for (const j of jumps) options.push({ label: `L${lv.number} · ${j.label}`, value: { li, si: j.si, opts: j.opts || {} } });
-  });
-  options.push({ label: 'Cancel', value: null });
-  const v = await ui.choice({ title: 'Jump to…', text: 'Every jump starts the stage fresh, before talking to the NPC.', options, cancelValue: null });
-  if (v) game.loadStage(v.li, v.si, v.opts);
+  const jumpsOf = (lv) =>
+    lv.debugJumps ? lv.debugJumps() : Array.from({ length: lv.stageCount }, (_, si) => ({ label: `Stage ${si + 1}: ${lv.stageName(si)}`, si }));
+  for (;;) {
+    const options = game.levels.map((lv, li) => {
+      const n = jumpsOf(lv).length;
+      return { label: `L${lv.number} · ${lv.title}`, hint: n > 1 ? `${n} jumps ▸` : '', value: li };
+    });
+    options.push({ label: 'Cancel', value: null });
+    const li = await ui.choice({ title: 'Jump to…', text: 'Every jump starts the stage fresh, before talking to the NPC.', options, cancelValue: null });
+    if (li === null || li === undefined) return;
+    const lv = game.levels[li];
+    const jumps = jumpsOf(lv);
+    if (jumps.length === 1) return game.loadStage(li, jumps[0].si, jumps[0].opts || {});
+    const jo = jumps.map((j) => ({ label: j.label, value: j }));
+    jo.push({ label: '◂ Back to levels', value: 'back' });
+    const j = await ui.choice({ title: `Jump to… ${lv.title}`, options: jo, cancelValue: 'back' });
+    if (j !== 'back') return game.loadStage(li, j.si, j.opts || {});
+  }
 }
 
 async function demoMenu(game) {
