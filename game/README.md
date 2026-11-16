@@ -5,12 +5,15 @@ estimating π in different ways. Plain HTML + JavaScript modules — no build st
 
 ## Running
 
+Run these from the repository root (the `Makefile` lives one level above `game/`):
+
 ```sh
 make run       # start the local server and open http://localhost:8005/
 make stop      # stop it
 make restart   # stop + start
 make status
 make run PORT=9000   # use another port
+make run GAME=game2  # serve a different game directory
 ```
 
 Needs Python 3 (only for the tiny static file server in `scripts/server.py`).
@@ -25,8 +28,8 @@ ones you know. Anyone starting at Level 1 or later gets all of them.
 | --- | --- | --- |
 | Arrows / WASD | move one square (up/down/left/right only — no diagonals) | on waking up |
 | H | help | after trying all four moves |
-| Enter (or Space) | talk · use · pick up · drop | when you first approach a number |
-| drag / T | π tracker: drag values into MIN / MAX, or press T to type them | after meeting the numbers |
+| Enter (or Space) | talk · use · pick up · drop | when 3 calls out to you |
+| drag / T | π tracker: drag values into MIN / MAX, or press T to type them | Level 1 |
 | L | mission select (replay unlocked missions) | Level 1 |
 | R | restart / abort current attempt | Level 1 |
 | ` or F9 | debug menu | always |
@@ -54,42 +57,48 @@ debug menu's demo statistics are the only exception.
 
 ## Levels
 
-0. **Wake Up** (intro, no maths) — π wakes beside a crashed pod and, by inner
-   monologue, learns to move, then H, then Enter to talk. Five numbers introduce
-   themselves (7, −3, ½, 0, √2: positive/negative, rational/irrational), π realises
-   it doesn't know its own value, makes a first guess (1–10) and drags it into
-   MIN or MAX. The map scrolls; glowing force fields mark the reachable area and
-   switch off as π learns; a map strip in the sidebar shows which areas are open.
-   Captain One waits at the far east end by the warp gate to Level 1.
-1. **Orbit Walk** (circumference ÷ diameter) — 3 orbits of growing size. π walks
-   along grid lines (up/down/left/right) from a launch pad round the dashed orbit
-   and back, then flies the **diameter** between two beacons on the dashed line
-   through the planet (it must be straight — a wobbly crossing takes extra steps and
-   is rejected). The player enters steps round (C), steps across (d) and π = C ÷ d.
-   Traced carefully this always gives **4** — never mentioned in advance. After all
-   three orbits, Captain One points out they all came to 4 and leaves "why?" as an
-   open question.
-2. **The Star Forge** (Leibniz series) — 10 parts, one per term ±4/(2k+1). Carry
-   4 wedges (each 1/(2k+1) of a disc) into the Star Forge. Solar crystals add, ice
-   comets subtract. Live π value, Leibniz sum and a convergence chart on screen (no
-   "true π" line). Afterwards Engineer 4 can show pairs of later partial sums
-   (10/11, 100/101, 1000/1001 terms), which hint that your value is trapped between them.
+0. **Wake Up** (intro, no maths) — π wakes beside a crashed pod with no memory,
+   learns to move, then H. **3** calls out and teaches Enter, then asks π who they
+   are, and π can't answer. π meets the other numbers (2.14, √2, −4, 0, e) in any
+   order. Talking to 3 plus at least 3 of the others (`NEEDED` in the level file)
+   switches off the last force field to the warp gate. The map scrolls, glowing force
+   fields mark the reachable area, and a map strip in the sidebar shows which areas are open.
+1. **Orbit Walk** (circumference ÷ diameter) — **1** explains the method. 3 orbits of
+   growing size. π walks along grid lines (up/down/left/right) from a launch pad round
+   the dashed orbit and back, then flies the **diameter** between two beacons (it must
+   be straight). The player enters C, d and π = C ÷ d. Traced carefully this always
+   gives **4**, which is never mentioned in advance. After each orbit, 1 compares the answers
+   so far (same / different), and after the third leaves "why?" as an open question.
+   The tracker (MIN / MAX) appears from this level on.
+2. **The Star Forge** (Leibniz series) — **2** explains the series. One part per term
+   ±4/(2k+1): carry 4 wedges (each 1/(2k+1) of a disc) into the Star Forge. Fire
+   crystals add, ice crystals subtract. Live π value, Leibniz sum and a convergence
+   chart (no "true π" line). The warp gate opens after **6 terms** (2 then congratulates
+   you automatically). You can carry on up to **20 terms**, after which 2 is out of crystals.
 
 ## Debug
 
 - ` or F9 opens the debug menu: jump to any level / stage / Level 0 step / Level 2
   part, run demo sessions (simulated players → range of π per stage), unlock all
   missions, force the warp gate open, view or reset save data.
-- URL jumps (level = level number): `index.html?level=0&step=tracker`,
+- URL jumps (level = level number): `index.html?level=0&step=meet`,
   `index.html?level=1&stage=3`, `index.html?level=2&part=5`.
 - Progress, tracker, learned controls and debug settings are saved in the
   browser's localStorage ("Reset save data" in the debug menu starts over).
 - Settings: `game.config.js`.
 
+## Dialogue
+
+Every line a character speaks is in **`npc_dialogue.js`**, one array per interaction,
+grouped by level. It mirrors `../npc_dialogue.md`, which is the source of truth. `{name}`
+placeholders (e.g. `{value}`) are filled in by the game. Tutorial hints, toasts and
+sidebar text are not dialogue, so they live in the level files.
+
 ## Project layout
 
 ```
 game.config.js        game-wide settings (speeds, view width, debug, save key)
+npc_dialogue.js       ALL character dialogue, by level and interaction
 index.html
 assets/
   theme.css           UI look (HUD, tracker, popups) — CSS variables at the top
@@ -106,6 +115,7 @@ src/
     state.js          save data, π tracker, learned controls, progress
     screens.js        intro / help / HUD / tracker / end-screen HTML
     debug.js          debug menu + demo sessions
+    talk.js           plays interactions from npc_dialogue.js
     fractions.js      reusable fraction-wedge delivery mechanic
     utils.js
   levels/

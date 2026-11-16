@@ -45,8 +45,10 @@ export function persist() {
   }
 }
 
-export function resetSave() {
+/** Wipe all save data. keepSettings: keep the debug settings (e.g. "unlock all"). */
+export function resetSave({ keepSettings = false } = {}) {
   const fresh = DEFAULT();
+  if (keepSettings) fresh.settings = { ...fresh.settings, ...save.settings };
   for (const k of Object.keys(save)) delete save[k];
   Object.assign(save, fresh);
   persist();

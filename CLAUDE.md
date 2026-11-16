@@ -54,7 +54,21 @@ This game wants to start with easiest methods first and also the ones that can b
 All levels should have a similar style and share as much generic code as possible such as the grid layout, sprites, 
 help controls and popups. The UI visual style of the game should be able to be changed easily across all levels.
 
+
+## NPC dialogue
+Each level will have at least one NPC. I want to be in control of this dialogue as this is the how I can inject my own ways of describing the mathematical concepts and getting the user to think
+
+Dialogue I want included will be added to the file `npc_dialogue.md` and this will be broken down by level. 
+
+Within your game files, I would like this dialogue saved in its own file for all NPC dialogue so that it is easy for a human coder to read and parse to get a full flavour of the game without having to look at code elsewhere or jump between files. It likely makes sense to store dialogue in a single interaction as an array. For example, it may be one section of dialogue which requires the user to press enter multiple times. Let's store this all in an array for a single interaction. A level can have multiple interactions. For example, the first interaction could be explaining the level and a later interaction could be explaining the solution.
+
+Where dialogue exists in the `npc_dialogue.md` FILE, use this as a guide for level creation.
+
+Do not add extra dialogue in a level if dialogue exists.
+
+You can make up dialogue as placeholders when creating levels where there is no NPC dialogue yet specified. 
+
 ## Sessions
-A session should create a game in a directory called, for example, 'game' or 'game2'.
+A new claude ai session should create a game in a directory called, for example, 'game' or 'game2'.
 
 If a directory already exists, ask the user if they would like to modify an already existing game or start fresh. i.e. a new context and new game directory

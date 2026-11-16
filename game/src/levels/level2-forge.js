@@ -4,24 +4,29 @@
 //
 // Each "part" is one term ± 4/(2k+1). Wedge-shaped pieces are scattered around
 // the deck; each is 1/(2k+1) of a disc (so its size shows its value). The player
-// carries 4 of them, one at a time, into the Star Forge. Golden solar crystals
-// add (+) and make the star burn hotter; icy comet chunks subtract (−) and cool it.
+// carries 4 of them, one at a time, into the Star Forge. Fire crystals add (+)
+// and make the star burn hotter; ice crystals subtract (−) and cool it.
 // The current π value is shown all the time, plus a chart of it zig-zagging in.
+// The warp gate opens after UNLOCK terms; the player may carry on up to PARTS terms,
+// then 2 runs out of crystals. (Dialogue: npc_dialogue.js → level2.)
 import * as ui from '../core/ui.js';
 import { tracker, markStageDone } from '../core/state.js';
 import { fmt, key, fracHtml, clamp } from '../core/utils.js';
 import { DeliveryRound, drawWedge, drawDiscSet, fracText } from '../core/fractions.js';
 import { PIECE_STYLES, FORGE_STYLE } from '../../assets/theme.js';
+import { play, DIALOGUE, CHARACTERS } from '../core/talk.js';
 
 const ID = 'forge';
-const PARTS = 10;
+const PARTS = 20;  // most terms 2 has crystals for
+const UNLOCK = 6;  // terms needed to open the warp gate
 const COLS = 26, ROWS = 17;
+const PLAYER_START = { x: 8, y: 14 };
 const FORGE = { x: 12, y: 7, w: 2, h: 2 };             // tiles the forge occupies
 const FORGE_C = { x: FORGE.x + FORGE.w / 2, y: FORGE.y + FORGE.h / 2 }; // raw grid centre
 const DISC_AREA = { x: 0.6, y: 4.2, w: 7.8, h: 8 };    // where the "big shape" is drawn
 const CHART = { x0: 4, x1: 25.4, y0: 0.25, y1: 3.4, lo: 2.8, hi: 4.1 };
-const ENGINEER = { name: 'Engineer 4', sprite: 'engineer4' };
-const say = (lines) => ui.dialog({ speaker: ENGINEER.name, sprite: ENGINEER.sprite, lines });
+const D = DIALOGUE.level2;
+const TWO = CHARACTERS.two;
 
 const term = (k) => ({ sign: k % 2 === 0 ? 1 : -1, num: 4, den: 2 * k + 1 });
 const leibniz = (n) => {
@@ -59,7 +64,7 @@ function spawnPoints() {
 function createStage(game, si, opts = {}) {
   const startPart = clamp(opts.part ?? 0, 0, PARTS);
   const st = {
-    briefed: false,
+    briefed: startPart > 0, // debug jumps into a later part skip the first conversation
     part: startPart,
     sum: leibniz(startPart), // Leibniz sum of completed terms (= π/4)
     history: Array.from({ length: startPart }, (_, k) => 4 * leibniz(k + 1)),
@@ -68,16 +73,19 @@ function createStage(game, si, opts = {}) {
     flash: null,
     finished: startPart >= PARTS,
   };
+  const unlocked = () => st.part >= UNLOCK;
+  if (unlocked()) markStageDone(ID, si);
 
   const livePi = () => 4 * st.sum + (st.round ? st.round.partialValue() : 0);
   const inForge = (x, y) => x >= FORGE.x && x < FORGE.x + FORGE.w && y >= FORGE.y && y < FORGE.y + FORGE.h;
   const nearForge = (p) => p.x >= FORGE.x - 1 && p.x <= FORGE.x + FORGE.w && p.y >= FORGE.y - 1 && p.y <= FORGE.y + FORGE.h;
 
-  function spawnRound() {
-    const p = game.player;
+  function spawnRound(p = game.player) {
     st.round = new DeliveryRound({ ...term(st.part), spawnPoints: spawnPoints().filter((q) => q.x !== p.x || q.y !== p.y) });
     st.carrying = null;
   }
+
+  if (st.briefed && !st.finished) spawnRound(PLAYER_START);
 
   function restart() {
     st.part = 0;
@@ -92,62 +100,13 @@ function createStage(game, si, opts = {}) {
   async function talk() {
     if (!st.briefed) {
       st.briefed = true;
-      if (st.part === 0) {
-        await say([
-          'Hey there, π! Engineer 4 here, keeper of the <b>Star Forge</b>.',
-          'Long ago, a mathematician called Leibniz found a recipe for your number:<br><b>π/4 = 1 − 1/3 + 1/5 − 1/7 + …</b><br>The fractions go on forever!',
-          'Multiply by 4 and you get <b>π = 4 − 4/3 + 4/5 − 4/7 + …</b> — each of those is one term for my forge.',
-          'Each disc on the floor is one whole. The wedges lying around are pieces of a disc: a 1/5 wedge is worth 1/5. Carry <b>4</b> of them into the forge and you’ve added 4/5!',
-          '<span class="pos">Golden solar crystals</span> make the star hotter (+). <span class="neg">Icy comet chunks</span> cool it down (−).',
-          `Walk onto a wedge and press ${key('Enter')} to pick it up. Walk next to the forge and press ${key('Enter')} to throw it in. Watch the chart at the top!`,
-        ]);
-      } else if (st.finished) {
-        await say(['Welcome back! All the terms are in the forge already. Talk to me again to see what happens with more terms.']);
-      } else {
-        await say([
-          `Welcome back to the Star Forge, π! We’re on term ${st.part + 1} of ${PARTS}.`,
-          'Carry 4 wedges into the forge for each term. <span class="pos">Solar crystals</span> add, <span class="neg">ice comets</span> subtract.',
-        ]);
-      }
+      await play(D.intro);
       if (!st.finished) spawnRound();
       return;
     }
-    if (st.finished) return finishedTalk();
-    const t = term(st.part);
-    const lines = [
-      `Term ${st.part + 1} of ${PARTS}: <b>${fracText(t.sign, 4, t.den)}</b>. Each ${styleFor(t.sign).name} wedge is ${wedgeName(t.den)}. Bring ${st.round.remaining} more to the forge.`,
-    ];
-    if (st.part >= 3) lines.push('Look at the chart: π jumps up, then down, then up again — and every jump is a little smaller. The series is closing in on something… on you!');
-    if (st.part >= 1) lines.push(`Want to start over? Press ${key('R')} any time.`);
-    return say(lines);
-  }
-
-  async function finishedTalk() {
-    const v = await ui.choice({
-      speaker: ENGINEER.name,
-      sprite: ENGINEER.sprite,
-      text: `All ${PARTS} terms are in: <b>π ≈ ${fmt(4 * st.sum, 5)}</b>. What next?`,
-      options: [
-        { label: 'What if we kept going?', value: 'more' },
-        { label: 'Restart the forge from term 1', value: 'restart' },
-        { label: 'Bye for now', value: null },
-      ],
-      cancelValue: null,
-    });
-    if (v === 'more') await ui.panel({ title: 'The Leibniz series keeps going…', html: fastForwardHtml(), buttons: [{ label: 'Wow', value: true, primary: true }] });
-    if (v === 'restart') restart();
-  }
-
-  function fastForwardHtml() {
-    // Only values the series itself produces — never the real value of π.
-    const rows = [10, 11, 100, 101, 1000, 1001]
-      .map((n) => `<tr><td>${n.toLocaleString()}</td><td>${(4 * leibniz(n)).toFixed(4)}</td></tr>`)
-      .join('');
-    return `<p>The forge computer ran the series further for you:</p>
-      <table class="ff"><tr><th>terms</th><th>π ≈</th></tr>${rows}</table>
-      <p>Each extra term only nudges π a tiny bit, so the Leibniz series is very <b>slow</b>. But look at each
-      pair: one more term always flips it to the other side. Your true value must be trapped between them —
-      maybe a good MIN and MAX?</p>`;
+    if (st.finished) return play(D.outOfCrystals);
+    if (!unlocked()) return play(D.howAreYouGettingOn, { n: UNLOCK - st.part });
+    return play(D.sixTermsDone, { value: fmt(4 * st.sum, 5) });
   }
 
   // ------------------------------------------------------------ actions
@@ -172,7 +131,7 @@ function createStage(game, si, opts = {}) {
       }
     }
     if (nearForge(p)) {
-      ui.toast(st.round ? 'Bring wedges here and press Enter to feed the forge.' : 'Talk to Engineer 4 to fire up the forge.');
+      ui.toast(st.round ? 'Bring crystals here and press Enter to feed the forge.' : st.finished ? 'There are no crystals left.' : `Talk to ${TWO.name} to fire up the forge.`);
       return true;
     }
     return false;
@@ -197,29 +156,23 @@ function createStage(game, si, opts = {}) {
     st.round = null; // left-over wedges vanish
     st.part++;
     game.refreshHud();
-    await say([
-      `Term ${k + 1} done: <b>${fracText(t.sign, 4, t.den)}</b>!`,
-      `Leibniz sum: ${seriesText(k + 1)} = <b>${st.sum.toFixed(5)}</b><br>π ≈ 4 × ${st.sum.toFixed(5)} = <b>${pi.toFixed(5)}</b>`,
-    ]);
     tracker.addFound(pi, `Leibniz series — ${k + 1} term${k ? 's' : ''}`);
-    ui.toast(`<b>${fmt(pi, 4)}</b> added to your tracker — drag it into MIN or MAX if you want to keep it`, 3500);
+    ui.toast(`Term ${k + 1} done: <b>${fracText(t.sign, 4, t.den)}</b> → π ≈ <b>${fmt(pi, 5)}</b>. Added to your tracker.`, 3500);
 
     if (st.part >= PARTS) {
       st.finished = true;
-      markStageDone(ID, si);
-      await say([
-        `That’s all ${PARTS} terms: π ≈ <b>${pi.toFixed(5)}</b>. Close… but still not exact!`,
-        'The warp gate (top-left) is powered up now. Talk to me if you want to see what happens with thousands more terms — or restart the forge.',
-      ]);
+      ui.toast(`That was the last of the crystals: ${PARTS} terms, π ≈ <b>${fmt(pi, 5)}</b>.`, 5000);
     } else {
       spawnRound();
-      const n = term(st.part);
-      ui.toast(`Next term: <b>${fracText(n.sign, 4, n.den)}</b> — new ${styleFor(n.sign).name} wedges have appeared!`, 3200);
+    }
+    if (st.part === UNLOCK) {
+      markStageDone(ID, si);
+      await play(D.sixTermsDone, { value: fmt(pi, 5) });
     }
   }
 
   async function onRestart() {
-    if (!st.briefed) return ui.toast('Talk to Engineer 4 first.');
+    if (!st.briefed) return ui.toast(`Talk to ${TWO.name} first.`);
     const ok = await ui.choice({
       title: 'Restart the Star Forge?',
       text: 'The series goes back to term 1 (your π tracker keeps its values).',
@@ -241,15 +194,18 @@ function createStage(game, si, opts = {}) {
     const piBlock = `<h3>Leibniz sum so far (π/4)</h3><div class="series">${seriesText(st.part)}</div>
       <div class="value">= ${fmt(st.sum, 5)}</div>
       <h3>Current π</h3><div class="pi-now">π ≈ ${fmt(pi, 5)}</div>${partial}`;
-    if (!st.briefed) return `<h3>Mission</h3><p>Talk to <b>Engineer 4</b> — walk next to them and press Enter.</p>${piBlock}`;
+    if (!st.briefed) return `<h3>Mission</h3><p>Talk to <b>${TWO.name}</b> — walk next to them and press Enter.</p>${piBlock}`;
     if (st.finished || !st.round) {
-      return `<h3>Mission</h3><p>All ${PARTS} terms done! Take the warp gate, or talk to Engineer 4.</p>${piBlock}`;
+      return `<h3>Mission</h3><p>All ${PARTS} terms done — no crystals left. Take the warp gate, or press ${key('R')} to restart the forge.</p>${piBlock}`;
     }
+    const mission = unlocked()
+      ? `<p class="muted">The warp gate is open. Keep going for a better estimate (up to ${PARTS} terms), or take the gate.</p>`
+      : `<p class="muted">Feed at least ${UNLOCK} terms to open the warp gate (${st.part} / ${UNLOCK}).</p>`;
     const t = term(st.part);
     const cls = t.sign < 0 ? 'neg' : 'pos';
     const dots = Array.from({ length: t.num }, (_, i) => `<span class="dot ${i < st.round.delivered ? 'on' : ''}"></span>`).join('');
     const carrying = st.carrying ? `Carrying: <b class="${cls}">${styleFor(t.sign).name} (${fracText(t.sign, 1, t.den)})</b>` : 'Carrying: nothing';
-    return `<h3>Term ${st.part + 1} of ${PARTS}</h3>
+    return `${mission}<h3>Term ${st.part + 1} of ${PARTS}</h3>
       <div class="big-frac ${cls}">${t.sign < 0 ? '−' : '+'} ${fracHtml(4, t.den)}</div>
       <p>= 4 ${styleFor(t.sign).name} wedges, each ${wedgeName(t.den)}</p>
       <div class="dots ${cls}">${dots}</div>
@@ -376,12 +332,13 @@ function createStage(game, si, opts = {}) {
     cols: COLS,
     rows: ROWS,
     anchor: 'tile',
-    playerStart: { x: 8, y: 14 },
-    npcs: [{ id: 'engineer', name: ENGINEER.name, sprite: ENGINEER.sprite, x: 4, y: 14, talk }],
-    gate: { x: 1, y: 1, isOpen: () => st.finished, lockedText: `Feed all ${PARTS} terms of the series into the Star Forge to power up the warp gate.` },
+    playerStart: PLAYER_START,
+    npcs: [{ id: 'two', name: TWO.name, sprite: TWO.sprite, x: 4, y: 14, talk }],
+    gate: { x: 1, y: 1, isOpen: unlocked, lockedText: `Feed at least ${UNLOCK} terms of the series into the Star Forge to power up the warp gate.` },
     help: `<p>π = 4 − 4/3 + 4/5 − 4/7 + … Each term is 4 wedges. Walk onto a wedge (or next to it) and press
       ${key('Enter')} to pick it up, then press ${key('Enter')} next to the Star Forge to drop it in.
-      <span class="pos">Solar crystals</span> add, <span class="neg">ice comets</span> subtract.
+      <span class="pos">Fire crystals</span> add, <span class="neg">ice crystals</span> subtract.
+      ${UNLOCK} terms open the warp gate; you can keep going up to ${PARTS}.
       ${key('R')} restarts the series from term 1.</p>`,
     state: st, // exposed for debugging / tests
     blocked: inForge,
@@ -404,9 +361,9 @@ export default {
   createStage,
   debugJumps: () => [
     ...Array.from({ length: PARTS }, (_, k) => ({ label: `Part ${k + 1}: ${fracText(term(k).sign, 4, term(k).den)}`, si: 0, opts: { part: k } })),
-    { label: 'All terms done (gate open)', si: 0, opts: { part: PARTS } },
+    { label: `All ${PARTS} terms done (out of crystals)`, si: 0, opts: { part: PARTS } },
   ],
-  // A demo player stops after a random number of terms.
-  simulate: (si, rng) => 4 * leibniz(1 + Math.floor(rng() * PARTS)),
-  simulateNote: 'The series is fixed, so the spread only comes from how many of the 10 terms a player completes.',
+  // A demo player does the required terms, then stops after a random number of optional ones.
+  simulate: (si, rng) => 4 * leibniz(UNLOCK + Math.floor(rng() * (PARTS - UNLOCK + 1))),
+  simulateNote: `The series is fixed, so the spread only comes from how many terms a player completes (${UNLOCK} to ${PARTS}).`,
 };

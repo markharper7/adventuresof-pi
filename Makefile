@@ -9,10 +9,13 @@
 #   make open      open the game in a browser
 #
 # Change the port with e.g.  make run PORT=9000
+# Run a different game directory with e.g.  make run GAME=game2
 
+GAME     ?= game
 PORT     ?= 8005
-PID_FILE := .server.pid
-LOG_FILE := .server.log
+PID_NAME := .server.pid
+PID_FILE := $(GAME)/$(PID_NAME)
+LOG_FILE := $(GAME)/.server.log
 URL      := http://localhost:$(PORT)/
 
 # Pick a working Python 3 (python3 on Linux, often just python on Windows).
@@ -36,10 +39,11 @@ run: start open
 
 start:
 	@if [ -z "$(PYTHON)" ]; then echo "Python 3 not found - please install it."; exit 1; fi
+	@if [ ! -f "$(GAME)/scripts/server.py" ]; then echo "No game found in '$(GAME)/' (missing $(GAME)/scripts/server.py)"; exit 1; fi
 	@if $(PORT_OPEN); then \
 		echo "Server already running at $(URL)"; \
 	else \
-		nohup $(PYTHON) scripts/server.py $(PORT) $(PID_FILE) > $(LOG_FILE) 2>&1 & \
+		nohup $(PYTHON) $(GAME)/scripts/server.py $(PORT) $(PID_NAME) > $(LOG_FILE) 2>&1 & \
 		for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do \
 			if $(PORT_OPEN); then break; fi; sleep 0.3; \
 		done; \

@@ -9,11 +9,12 @@
 // typed in and calculated by the player.
 //
 // Traced carefully, this method ALWAYS gives exactly 4 (a staircase around a
-// circle is as long as the square around it). We never say so in advance: once
-// the player has done all three orbits, Captain One points out that they all
-// came to 4 and leaves "why?" as an open question.
+// circle is as long as the square around it). We never say so in advance: after
+// each orbit, 1 compares the answers so far, and after the third leaves "why?"
+// as an open question. (Dialogue: npc_dialogue.js → level1.)
 import * as ui from '../core/ui.js';
 import { save, persist, tracker, markStageDone } from '../core/state.js';
+import { play, DIALOGUE, CHARACTERS } from '../core/talk.js';
 import { parseNum, fmt, key } from '../core/utils.js';
 import { fmtShort } from '../core/screens.js';
 
@@ -25,12 +26,17 @@ const STAGES = [
   { r: 5, name: 'Red planet Rho', planet: 'planetRed' },
   { r: 8, name: 'Gas giant Gamma', planet: 'planetGiant' },
 ];
-const CAPTAIN = { name: 'Captain One', sprite: 'captain1' };
-const say = (lines) => ui.dialog({ speaker: CAPTAIN.name, sprite: CAPTAIN.sprite, lines });
-const think = (lines) => ui.dialog({ speaker: 'π (thinking)', sprite: 'player', lines });
+const D = DIALOGUE.level1;
+const ONE = CHARACTERS.one;
 
-/** Latest π the player found on each orbit, kept across stages and sessions. */
+/** Latest result on each orbit, { pi: typed answer, exact: C ÷ d }, kept across stages and sessions. */
 const orbitResults = () => (save.levelData[ID] ||= {});
+const resultOf = (i) => {
+  const r = orbitResults()[i];
+  if (r === undefined || r === null) return null;
+  return typeof r === 'number' ? { pi: r, exact: r } : r; // older saves stored just the number
+};
+const sameValue = (a, b) => Math.abs(a.exact - b.exact) < 1e-9;
 
 function createStage(game, si) {
   const def = STAGES[si];
@@ -39,7 +45,8 @@ function createStage(game, si) {
   const isLast = si === STAGES.length - 1;
   const ends = [{ x: CX - R, y: CY }, { x: CX + R, y: CY }]; // diameter beacons
   // mode: idle → drawing (orbit) → measure (go to a beacon) → across (flying the diameter) → done
-  const st = { briefed: false, mode: 'idle', path: [], steps: 0, dia: [], diaSteps: 0, diaFrom: null, results: [] };
+  // Only the first orbit needs 1's briefing; later orbits start ready to trace.
+  const st = { briefed: si > 0, mode: 'idle', path: [], steps: 0, dia: [], diaSteps: 0, diaFrom: null, results: [] };
   const onPad = (p) => p.x === pad.x && p.y === pad.y;
   const endAt = (p) => ends.findIndex((e) => e.x === p.x && e.y === p.y);
   const resetDiameter = () => {
@@ -53,65 +60,22 @@ function createStage(game, si) {
     if (!st.briefed) {
       st.briefed = true;
       game.refreshHud();
-      if (si === 0) {
-        return say([
-          'Welcome to my orbit station, π! I’m Captain One.',
-          'You want to know your value? Then you need to study circles. Every circle hides the same special number: its <b>circumference ÷ diameter</b>.',
-          `That dashed ring is the orbit of ${def.name}. Fly to the <b>launch pad</b> at the top and press ${key('Enter')} to start tracing.`,
-          'Follow the ring all the way round, in your own way, and land back on the pad. Your thrusters follow the grid lines — up, down, left and right — and every move is one square.',
-          'I’ll count your steps on the step counter. Then you’ll fly <b>straight across</b> the orbit, between the two beacons on the dashed line, to measure its diameter — and we’ll do the sum.',
-        ]);
-      }
-      return say([
-        `Another orbit — this one around ${def.name}. ${isLast ? 'Our biggest yet!' : 'A bigger circle this time.'}`,
-        'Same mission: trace it from the launch pad, fly straight across it between the beacons, and divide. Will a bigger circle give a different answer?',
-      ]);
+      return play(D.intro);
     }
-    if (st.mode === 'drawing') {
-      return say([`Keep flying! Land back on the launch pad to close the orbit. Press ${key('R')} to abort and start again.`]);
-    }
-    if (st.mode === 'measure') {
-      return say([`Now the diameter: fly to one of the two <b>beacons</b> at the ends of the dashed line through the planet, press ${key('Enter')}, then fly straight across to the other beacon.`]);
-    }
-    if (st.mode === 'across') {
-      return say([`Fly straight across to the other beacon — the shortest way, along the dashed line. Press ${key('R')} to start the measurement again.`]);
-    }
-    if (st.results.length) return say(commentary(st.results[st.results.length - 1]));
-    return say([`The launch pad is at the top of the orbit. Stand on it and press ${key('Enter')} to begin tracing.`]);
+    if (st.mode === 'done') return reaction();
+    return play(D.howDidYouGetOn);
   }
 
-  function commentary(res) {
-    const lines = [];
-    if (res.pi > 4.05) {
-      lines.push(`Your orbit gave <b>π ≈ ${fmtShort(res.pi)}</b>. Looks like you wandered away from the dashed line in places — extra steps make the answer bigger. Try hugging the line next time and see what changes.`);
-    } else if (res.pi < 3.95) {
-      lines.push(`Your orbit gave <b>π ≈ ${fmtShort(res.pi)}</b>. You cut inside the dashed line in places — a shorter path makes the answer smaller. Try following the line closely next time and see what changes.`);
-    } else {
-      lines.push(`Your orbit gave <b>π ≈ ${fmtShort(res.pi)}</b>. Careful flying! Remember that number.`);
-    }
-    if (save.flags.orbitPuzzle) {
-      lines.push('Still puzzling over why careful orbits come out the way they do? Keep thinking about it on your travels…');
-    } else if (!isLast) {
-      lines.push('Try again if you like. When you’re ready, the warp gate (top-left) leads to a bigger orbit. Do you think a bigger circle will give a different answer?');
-    } else {
-      lines.push('Try again if you like — or see how your answers compare across all three orbits.');
-    }
-    return lines;
-  }
-
-  /** After all three orbits: point out they all come to 4, but don't explain why. */
-  async function puzzleReveal() {
-    const res = orbitResults();
-    const rows = STAGES.map((s, i) => `${s.name} (d = ${2 * s.r}): <b>${fmtShort(res[i])}</b>`).join('<br>');
-    await say([
-      `Let’s line up your three orbits:<br>${rows}`,
-      'Three very different circles. But did you notice? Trace any of them carefully along the dashed line and the answer comes out as <b>exactly 4</b> — however big or small the circle.',
-      'So… is π really 4? Or is walking only up, down, left and right playing some kind of trick on us?',
-      'I’m not going to tell you. That’s a puzzle for you to think about on your travels. 🤔',
-    ]);
-    await think(['Exactly 4, every time… Is that really my value? It’s in my tracker for now — but something feels a bit off.']);
-    save.flags.orbitPuzzle = true;
-    persist();
+  /** 1's reaction to this orbit's answer, comparing it with the earlier orbits. */
+  function reaction() {
+    if (si === 0) return play(D.firstAnswer);
+    const rs = [0, 1, 2].slice(0, si + 1).map(resultOf);
+    const allSame = rs.every((r) => r && sameValue(r, rs[si]));
+    if (si === 1) return play(allSame ? D.secondAnswerSame : D.secondAnswerDifferent);
+    const show = (r) => (r ? fmtShort(r.pi) : '?');
+    return allSame
+      ? play(D.thirdAnswerSame, { value: show(rs[2]) })
+      : play(D.thirdAnswerDifferent, { value_1: show(rs[0]), value_2: show(rs[1]), value_3: show(rs[2]) });
   }
 
   // ------------------------------------------------------------ actions
@@ -131,7 +95,7 @@ function createStage(game, si) {
     }
     if (!onPad(game.player)) return false;
     if (!st.briefed) {
-      await ui.dialog({ speaker: 'Launch pad', sprite: 'pad', lines: ['The launch pad is locked. Talk to <b>Captain One</b> first — walk next to them and press Enter.'] });
+      await ui.dialog({ speaker: 'Launch pad', sprite: 'pad', lines: [`The launch pad is locked. Talk to <b>${ONE.name}</b> first — walk next to them and press Enter.`] });
       return true;
     }
     if (st.mode === 'drawing') {
@@ -194,10 +158,7 @@ function createStage(game, si) {
     if (st.mode === 'drawing') {
       st.path.push({ x: to.x, y: to.y });
       st.steps++;
-      if (onPad(to) && st.steps >= 4) {
-        st.mode = 'closing';
-        game.run(orbitClosed);
-      }
+      if (onPad(to) && st.steps >= 4) orbitClosed();
       return;
     }
     if (st.mode === 'across') {
@@ -215,26 +176,20 @@ function createStage(game, si) {
   }
 
   // ------------------------------------------------------------ the maths
-  async function orbitClosed() {
-    await say([
-      `Orbit closed! 🎉 You flew <b>${st.steps}</b> steps around ${def.name}.`,
-      `Now measure straight across. Fly to one of the two glowing <b>beacons</b> at the ends of the dashed line through the planet, press ${key('Enter')}, and fly across to the other beacon.`,
-    ]);
+  function orbitClosed() {
     st.mode = 'measure';
+    ui.toast(`Orbit closed! 🎉 You flew <b>${st.steps}</b> steps round. Now fly to a glowing <b>beacon</b> on the dashed line, press ${key('Enter')}, and fly straight across to the other one.`, 6000);
   }
 
   async function diameterDone() {
     if (st.diaSteps !== d) {
       // a diameter must go straight across: any wobble adds steps
-      await say([
-        `That took <b>${st.diaSteps}</b> steps — but your path wasn’t quite straight.`,
-        'A diameter goes in a straight line, right through the centre of the circle. Fly back to a beacon, press Enter, and try again — straight along the dashed line.',
-      ]);
       resetDiameter();
       st.mode = 'measure';
+      ui.toast(`That took <b>${st.diaSteps}</b> steps, but it wasn’t straight. A diameter goes straight through the centre. Go back to a beacon, press ${key('Enter')} and try again.`, 6000);
       return;
     }
-    await say([`Straight across in <b>${st.diaSteps}</b> steps. That’s the diameter! Now for the sum.`]);
+    ui.toast(`Straight across in <b>${st.diaSteps}</b> steps. That’s the diameter!`, 3000);
     await finish();
   }
 
@@ -269,32 +224,18 @@ function createStage(game, si) {
     tracker.addFound(pi, `Orbit walk — ${def.name}`);
     st.results.push({ S, d, pi });
     st.mode = 'done';
-    orbitResults()[si] = pi;
+    orbitResults()[si] = { pi, exact: S / d };
     markStageDone(ID, si);
     persist();
     game.refreshHud();
-
-    if (!save.flags.firstOrbitValue) {
-      save.flags.firstOrbitValue = true;
-      persist();
-      await think([
-        `${fmtShort(pi)}… I worked that out myself! That could be my value.`,
-        'It’s popped into the tray of my tracker at the top. Let me drag it into my <b>MIN</b> or <b>MAX</b> box.',
-        'I don’t know yet if it’s too big or too small — so either one is fine for now.',
-      ]);
-    } else {
-      ui.toast(`<b>${fmtShort(pi)}</b> added to your tracker — drag it into MIN or MAX if you want to keep it`, 3500);
-    }
-
-    await say(commentary(st.results[st.results.length - 1]));
-    const all = orbitResults();
-    if (!save.flags.orbitPuzzle && STAGES.every((_, i) => all[i] !== undefined)) await puzzleReveal();
+    ui.toast(`<b>${fmtShort(pi)}</b> added to your tracker — drag it into MIN or MAX if you want to keep it`, 3500);
+    await reaction();
   }
 
   // ------------------------------------------------------------ HUD + drawing
   function hud() {
     const status = !st.briefed
-      ? 'Talk to <b>Captain One</b> — walk next to them and press Enter.'
+      ? `Talk to <b>${ONE.name}</b> — walk next to them and press Enter.`
       : st.mode === 'drawing'
         ? 'Tracing… land back on the launch pad to close the orbit.'
         : st.mode === 'measure'
@@ -418,7 +359,7 @@ function createStage(game, si) {
     rows: ROWS,
     anchor: 'vertex',
     playerStart: { x: 3, y: 17 },
-    npcs: [{ id: 'captain', name: CAPTAIN.name, sprite: CAPTAIN.sprite, x: 6, y: 15, talk }],
+    npcs: [{ id: 'one', name: ONE.name, sprite: ONE.sprite, x: 6, y: 15, talk }],
     gate: { x: 2, y: 3, isOpen: () => st.results.length > 0, lockedText: 'Trace the orbit and work out π to power up the warp gate.' },
     help: `<p>π walks along the grid lines, one square per step. Trace the dashed orbit from the launch pad and land back on it.
       Then go to a beacon at one end of the dashed line, press Enter and fly straight across to the other beacon to measure the diameter.

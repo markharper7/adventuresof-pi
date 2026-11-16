@@ -1,21 +1,23 @@
 // LEVEL 0 — Wake Up: the introduction. No maths yet.
 //
-// π wakes up next to a crashed pod, realises it doesn't know its own value, and
-// (through its inner monologue) learns the controls one at a time:
+// π wakes up next to a crashed pod with no memory (dialogue: npc_dialogue.js → level0)
+// and learns the controls one at a time:
 //   1. move (try all four arrows)      → learns H for help
 //   2. open help                       → first force field switches off
-//   3. meet five number characters     → learns Enter to talk (rational, irrational, negative…)
-//   4. realises it doesn't know its value → learns the MIN / MAX tracker, makes a guess
-//      and drags it into MIN or MAX    → second force field switches off
-//   5. walks east to Captain One and the warp gate to Level 1.
+//   3. 3 calls out and teaches Enter   → π can't say who they are
+//   4. meet at least NEEDED of the other numbers (2.14, √2, −4, 0, e)
+//                                      → second force field switches off
+//   5. walk east to the warp gate to Level 1.
 //
 // The map is wider than the screen (the camera follows π). Glowing force fields
 // show the edge of the area you can reach; the map strip in the sidebar shows
 // which areas are open.
 import * as ui from '../core/ui.js';
-import { hasSkill, markStageDone, tracker } from '../core/state.js';
-import { parseNum, key, cheb } from '../core/utils.js';
+import { hasSkill, markStageDone } from '../core/state.js';
+import { key, cheb } from '../core/utils.js';
+import { play, DIALOGUE, CHARACTERS } from '../core/talk.js';
 
+const D = DIALOGUE.level0;
 const ID = 'wakeup';
 const COLS = 52, ROWS = 13, VIEW = 24;
 const BARRIERS = [14, 36]; // force-field columns between the three areas
@@ -30,62 +32,35 @@ const ROCKS = [
   { x: 40, y: 2, s: 0.5 }, { x: 43, y: 10, s: 0.4 }, { x: 50, y: 1, s: 0.35 }, { x: 24, y: 11, s: 0.3 },
 ];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const think = (lines) => ui.dialog({ speaker: 'π (thinking)', sprite: 'player', lines });
 
+const THREE = { id: 'three', x: 17, y: 6, callRange: 3 }; // calls out when π comes this close
+// The other numbers, met in any order. Positions only — their lines are in npc_dialogue.js.
 const NUMBERS = [
-  {
-    id: 'seven', name: 'Seven', sprite: 'seven', x: 18, y: 3,
-    lines: [
-      'Hi! I’m <b>Seven</b> — 7. A <b>positive whole number</b>.',
-      'I’m <b>rational</b>: I can be written as a fraction, 7/1. And I know my value exactly: seven. Lucky me!',
-    ],
-  },
-  {
-    id: 'minusThree', name: 'Minus Three', sprite: 'minusThree', x: 21, y: 9,
-    lines: [
-      'Brrr. I’m <b>Minus Three</b>, −3. I’m <b>negative</b> — I live to the left of zero on the number line.',
-      'Still rational, though: −3/1. Being negative doesn’t mean I don’t know who I am!',
-    ],
-  },
-  {
-    id: 'half', name: 'One Half', sprite: 'half', x: 26, y: 3,
-    lines: [
-      'Hello, I’m <b>One Half</b> — ½. I’m what you get when you split 1 into 2 equal parts.',
-      'I’m <b>rational</b> too: one whole number divided by another. As a decimal I’m 0.5 — and then I stop. Neat and tidy.',
-    ],
-  },
-  {
-    id: 'zero', name: 'Zero', sprite: 'zero', x: 29, y: 9,
-    lines: [
-      'I’m <b>Zero</b>. 0. <b>Not positive, not negative</b>. Just… nothing.',
-      'People think I’m boring, but without me there’d be no 10, 100 or 1000!',
-    ],
-  },
-  {
-    id: 'rootTwo', name: 'Root Two', sprite: 'rootTwo', x: 33, y: 6,
-    lines: [
-      'Greetings. I am <b>Root Two</b> — √2, the number that makes 2 when you multiply me by myself.',
-      'I am <b>irrational</b>: you can’t write me as a fraction. My decimals go on forever without repeating: 1.41421356…',
-      'Even so, I know my value precisely. Do you know yours, little one?',
-    ],
-  },
+  { id: 'twoPointOneFour', x: 21, y: 3 },
+  { id: 'minusFour', x: 24, y: 9 },
+  { id: 'zero', x: 28, y: 3 },
+  { id: 'rootTwo', x: 31, y: 9 },
+  { id: 'e', x: 34, y: 5 },
 ];
+const NEEDED = 3; // how many of NUMBERS π must talk to before the way to Level 1 opens
 
 function createStage(game, si, opts = {}) {
   const start = opts.step || 'sleep';
   const st = {
-    step: start,           // sleep → move → help → meet → tracker → drag → go
+    step: start,           // sleep → move → moved → help → meet → go
     dirs: new Set(),
-    met: new Set(start === 'tracker' || start === 'go' ? NUMBERS.map((n) => n.id) : []),
-    open: [start === 'meet' || start === 'tracker' || start === 'go', start === 'go'],
+    threeCalled: start === 'go',
+    metThree: start === 'go',
+    met: new Set(start === 'go' ? NUMBERS.map((n) => n.id) : []),
+    open: [start === 'meet' || start === 'go', start === 'go'],
     openedAt: [0, 0],
     wakeAt: start === 'sleep' ? null : -1, // -1 = already awake
   };
   // debug jumps start with the controls you'd have learned by then
-  const known = { sleep: [], meet: ['move', 'help'], tracker: ['move', 'help', 'talk'], go: ['move', 'help', 'talk', 'tracker'] }[start] || [];
+  const known = { sleep: [], meet: ['move', 'help'], go: ['move', 'help', 'talk'] }[start] || [];
   known.forEach((k) => game.learn(k, { announce: false }));
   if (start === 'go') markStageDone(ID, 0);
-  const startPos = { sleep: { x: 5, y: 6 }, meet: { x: 16, y: 6 }, tracker: { x: 31, y: 6 }, go: { x: 38, y: 6 } }[start] || { x: 5, y: 6 };
+  const startPos = { sleep: { x: 5, y: 6 }, meet: { x: 13, y: 6 }, go: { x: 38, y: 6 } }[start] || { x: 5, y: 6 };
 
   const openBarrier = (i) => {
     st.open[i] = true;
@@ -99,86 +74,40 @@ function createStage(game, si, opts = {}) {
       await sleep(1800); // zzz…
       st.wakeAt = performance.now();
       await sleep(1100); // stretch and sit up
-      await think([
-        '…Mmm? Wh-where am I?',
-        'Floating in space, next to a crashed pod… I must have been asleep for ages.',
-        'I’m a <b>number</b> — I can feel it. And every number knows its own value. It’s the most important thing about us!',
-        'So what’s my value? I’m… I’m… I can’t remember! 😟',
-        'Maybe moving around will help me think. Let me try my thrusters.',
-      ]);
+      await play(D.wakeUp);
       game.learn('move');
+      ui.toast('Use the arrow keys to move. Try all four!', 4000);
       st.step = 'move';
       return;
     }
-    if (st.step === 'tracker') return trackerLesson();
     ui.toast('<b>Level 0 · Wake Up</b>', 2500);
   }
 
-  async function afterMoves() {
-    await think([
-      'Up, down, left, right — I can move! One square at a time.',
-      `A voice in my memory says: <i>“If you’re ever lost, press ${key('H')} for help.”</i> Let me try it.`,
-    ]);
+  function afterMoves() {
     game.learn('help');
+    ui.toast(`Press ${key('H')} any time to see your controls. Try it now!`, 5000);
     st.step = 'help';
   }
 
-  async function learnTalk() {
-    await think([
-      'Someone’s over there… another number? Maybe they know something about me!',
-      `I’ll walk up next to them and press ${key('Enter')} to say hello.`,
-    ]);
+  async function threeCallsOut() {
+    st.threeCalled = true;
+    await play(D.threeCallsOut);
     game.learn('talk');
   }
 
-  async function trackerLesson() {
-    st.step = 'tracker';
-    await think([
-      'Seven, minus three, a half, zero, root two… every one of them knows its value. Even √2, whose digits never end!',
-      'And me? I’m <b>π</b>… but what number <i>am</i> I? I have to find out!',
-      'I’d better keep track of my guesses as I go.',
-    ]);
-    game.learn('tracker');
-    await think([
-      'There — my tracker, at the top of the screen. <b>MIN</b> is the smallest my value could be. <b>MAX</b> is the biggest.',
-      'I have no idea yet… so let me just make a guess, somewhere between 1 and 10.',
-    ]);
-    const res = await ui.form({
-      title: 'Make a guess',
-      html: '<p>What might π’s value be? Type any number between 1 and 10.</p>',
-      fields: [{ id: 'g', label: 'My guess' }],
-      buttons: [{ label: 'That’s my guess', value: 'ok', primary: true }],
-      validate: (v) => {
-        const n = parseNum(v.g);
-        if (n === null) return 'Type a number.';
-        if (n < 1 || n > 10) return 'Pick something between 1 and 10.';
-        return null;
-      },
-    });
-    tracker.addFound(parseNum(res.values.g), 'My first guess');
-    await think([
-      'My guess has appeared in the tray at the top of the screen.',
-      '<b>Drag it into the MIN box or the MAX box.</b> Either one — I don’t know yet if it’s too big or too small! (Or click it, then click a box.)',
-    ]);
-    st.step = 'drag';
+  async function checkUnlock() {
+    if (st.step !== 'meet' || !st.metThree || st.met.size < NEEDED) return;
+    openBarrier(1);
+    st.step = 'go';
+    markStageDone(ID, 0);
+    ui.toast('The force field to the east has switched off! The warp gate to Level 1 is open.', 5000);
   }
 
   async function onEvent(name) {
     if (name === 'help' && st.step === 'help') {
       openBarrier(0);
       st.step = 'meet';
-      await think([
-        'So that’s what I can do so far. I bet I’ll learn more as I go.',
-        'Oh! The force field to the east just switched off. Let’s explore!',
-      ]);
-    } else if (name === 'tracker-set' && st.step === 'drag') {
-      openBarrier(1);
-      st.step = 'go';
-      markStageDone(ID, 0);
-      await think([
-        'That’s how my tracker works: whenever I work out a new value, I can drag it into MIN or MAX. And I can always change my mind.',
-        'Hey — the second force field just switched off! And somebody is waving at the far end of the path…',
-      ]);
+      ui.toast('The force field to the east has switched off. Go and explore!', 4500);
     }
   }
 
@@ -187,38 +116,37 @@ function createStage(game, si, opts = {}) {
       st.dirs.add(`${dx},${dy}`);
       if (st.dirs.size === 4) {
         st.step = 'moved';
-        game.run(afterMoves);
+        afterMoves();
       }
     }
-    if (!hasSkill('talk') && st.open[0] && NUMBERS.some((n) => cheb(n, to) <= 2)) game.run(learnTalk);
+    if (!st.threeCalled && st.open[0] && cheb(THREE, to) <= THREE.callRange) game.run(threeCallsOut);
   }
 
+  const threeNpc = {
+    id: THREE.id, name: CHARACTERS.three.name, sprite: CHARACTERS.three.sprite, x: THREE.x, y: THREE.y,
+    talk: async () => {
+      if (st.metThree) return play(D.threeAgain);
+      await play(D.threeIntroduction);
+      st.metThree = true;
+      game.refreshHud();
+      await checkUnlock();
+    },
+  };
+
   function numberNpc(n) {
+    const c = CHARACTERS[n.id];
     return {
-      id: n.id, name: n.name, sprite: n.sprite, x: n.x, y: n.y,
+      id: n.id, name: c.name, sprite: c.sprite, x: n.x, y: n.y,
       talk: async () => {
-        await ui.dialog({ speaker: n.name, sprite: n.sprite, lines: n.lines });
+        await play(D.meet[n.id]);
+        const isNew = !st.met.has(n.id);
         st.met.add(n.id);
         game.refreshHud();
-        if (st.met.size === NUMBERS.length && st.step === 'meet') await trackerLesson();
-        else if (st.step === 'meet') ui.toast(`Numbers met: ${st.met.size} / ${NUMBERS.length}`);
+        if (isNew && st.step === 'meet' && st.met.size < NEEDED) ui.toast(`Numbers met: ${st.met.size} / ${NEEDED}`);
+        await checkUnlock();
       },
     };
   }
-
-  const captain = {
-    id: 'captain', name: 'Captain One', sprite: 'captain1', x: 47, y: 6,
-    talk: () =>
-      ui.dialog({
-        speaker: 'Captain One',
-        sprite: 'captain1',
-        lines: [
-          'Ahoy there! I’m <b>Captain One</b>.',
-          'Lost your value, have you? Then you need to study circles — every circle hides a very special number.',
-          `My orbit station is through that warp gate. Step next to it and press ${key('Enter')} when you’re ready!`,
-        ],
-      }),
-  };
 
   // ------------------------------------------------------------ HUD
   function hud() {
@@ -235,13 +163,16 @@ function createStage(game, si, opts = {}) {
       move: `Try your thrusters: press each arrow key at least once.<div class="arrow-test">${arrows}</div>`,
       moved: `Try your thrusters: press each arrow key at least once.<div class="arrow-test">${arrows}</div>`,
       help: `Press ${key('H')} to open the help screen.`,
-      meet: `Meet the numbers in the Number Meadow. ${hasSkill('talk') ? `Walk next to them and press ${key('Enter')}.` : ''} (${st.met.size} / ${NUMBERS.length} met)`,
-      tracker: 'Set up your tracker.',
-      drag: 'Drag your guess from the tray at the top into <b>MIN</b> or <b>MAX</b>.',
-      go: 'Head east and meet the number waving at the end of the path.',
+      meet: !hasSkill('talk')
+        ? 'Explore the Number Meadow to the east.'
+        : !st.metThree
+          ? `Walk up to <b>3</b> and press ${key('Enter')} to talk.`
+          : `Talk to the other numbers in the Number Meadow. (${Math.min(st.met.size, NEEDED)} / ${NEEDED} met)`,
+      go: 'Head east to the warp gate. It leads to Level 1.',
     }[st.step];
-    const met = st.met.size
-      ? `<h3>Numbers met</h3><ul class="results">${NUMBERS.filter((n) => st.met.has(n.id)).map((n) => `<li>${n.name}</li>`).join('')}</ul>`
+    const names = [...(st.metThree ? ['three'] : []), ...NUMBERS.filter((n) => st.met.has(n.id)).map((n) => n.id)];
+    const met = names.length
+      ? `<h3>Numbers met</h3><ul class="results">${names.map((id) => `<li>${CHARACTERS[id].name}</li>`).join('')}</ul>`
       : '';
     return `<h3>Map</h3><div class="regions">${map}</div><h3>What now?</h3><p>${objective}</p>${met}`;
   }
@@ -348,9 +279,9 @@ function createStage(game, si, opts = {}) {
     viewCols: VIEW,
     anchor: 'tile',
     playerStart: startPos,
-    npcs: [...NUMBERS.map(numberNpc), captain],
+    npcs: [threeNpc, ...NUMBERS.map(numberNpc)],
     gate: { x: 49, y: 6, isOpen: () => st.step === 'go', lockedText: 'This warp gate leads to Level 1.' },
-    help: '<p>Explore, meet the numbers, and find your way east. Glowing force fields mark the edge of where you can go — they switch off as you learn.</p>',
+    help: '<p>Explore, talk to the numbers, and find your way east. Glowing force fields mark the edge of where you can go — they switch off as you learn.</p>',
     state: st, // exposed for debugging / tests
     blocked: (x, y) => POD.some((p) => p.x === x && p.y === y) || BARRIERS.some((bx, i) => !st.open[i] && x === bx),
     canMove: () => st.wakeAt !== null && wakeK() >= 1 && st.step !== 'sleep',
@@ -377,7 +308,6 @@ export default {
   debugJumps: () => [
     { label: 'Start (π asleep)', si: 0, opts: { step: 'sleep' } },
     { label: 'Number Meadow (after help)', si: 0, opts: { step: 'meet' } },
-    { label: 'Tracker lesson', si: 0, opts: { step: 'tracker' } },
     { label: 'Path to Level 1', si: 0, opts: { step: 'go' } },
   ],
 };

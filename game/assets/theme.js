@@ -7,13 +7,15 @@
 // Sprite images (paths are relative to index.html).
 export const SPRITES = {
   player: 'assets/sprites/pi-character.svg',
-  captain1: 'assets/sprites/npc-captain-one.svg',
-  engineer4: 'assets/sprites/npc-engineer-four.svg',
-  seven: 'assets/sprites/npc-seven.svg',
-  minusThree: 'assets/sprites/npc-minus-three.svg',
-  half: 'assets/sprites/npc-half.svg',
-  zero: 'assets/sprites/npc-zero.svg',
+  // number characters (names and lines are in npc_dialogue.js)
+  three: 'assets/sprites/npc-three.svg',
+  twoPointOneFour: 'assets/sprites/npc-two-point-one-four.svg',
   rootTwo: 'assets/sprites/npc-root-two.svg',
+  minusFour: 'assets/sprites/npc-minus-four.svg',
+  zero: 'assets/sprites/npc-zero.svg',
+  e: 'assets/sprites/npc-e.svg',
+  one: 'assets/sprites/npc-one.svg',
+  two: 'assets/sprites/npc-two.svg',
   gate: 'assets/sprites/warp-gate.svg',
   pad: 'assets/sprites/launch-pad.svg',
   planetMoon: 'assets/sprites/planet-moon.svg',
@@ -111,7 +113,7 @@ export const LEVEL_STYLES = {
 // Fraction pieces (Level 2 and any future fraction level).
 export const PIECE_STYLES = {
   positive: {
-    name: 'solar crystal',
+    name: 'fire crystal',
     core: '#fff6c8',
     edge: '#ff9a1f',
     stroke: '#ffe08a',
@@ -119,7 +121,7 @@ export const PIECE_STYLES = {
     ghost: 'rgba(255,170,60,0.10)',
   },
   negative: {
-    name: 'ice comet',
+    name: 'ice crystal',
     core: '#f0fdff',
     edge: '#2fa8ff',
     stroke: '#bdeeff',

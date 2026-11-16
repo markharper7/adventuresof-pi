@@ -24,7 +24,7 @@ import { CONFIG } from '../../game.config.js';
 import { LEVELS } from '../levels/index.js';
 import { Renderer } from './renderer.js';
 import * as ui from './ui.js';
-import { save, persist, tracker, isStageUnlocked, isStageDone, hasSkill, learnSkill } from './state.js';
+import { save, persist, resetSave, tracker, isStageUnlocked, isStageDone, hasSkill, learnSkill } from './state.js';
 import { setupInput } from './input.js';
 import { loadSprites } from './assets.js';
 import { openDebugMenu } from './debug.js';
@@ -109,8 +109,16 @@ export class Game {
         ]
       : [{ label: 'Begin ✨', value: 'new', primary: true }];
     const v = await ui.panel({ title: CONFIG.title, html: introHtml(), buttons, closeKeys: [] });
-    if (v === 'new') this.loadStage(0, 0);
+    if (v === 'new') this.startNewGame();
     else this.loadStage(this.levelIndex, this.stageIndex);
+  }
+
+  /** A completely fresh game: forget tracker values, learned controls, progress and results. */
+  startNewGame() {
+    resetSave({ keepSettings: true });
+    this.selectedChip = null;
+    this.historyOpen = false;
+    this.loadStage(0, 0);
   }
 
   // ---------------------------------------------------------------- stages
