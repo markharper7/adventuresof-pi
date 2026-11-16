@@ -26,6 +26,7 @@ export const CHARACTERS = {
   two: { name: '2', sprite: 'two' },
   three: { name: '3', sprite: 'three' },
   four: { name: '4', sprite: 'four' },
+  five: { name: '5', sprite: 'five' },
 };
 
 export const DIALOGUE = {
@@ -369,5 +370,75 @@ export const DIALOGUE = {
 
     // Talking to 4 after that.
     again: [{ four: ['More sides, tighter squeeze. Your value is trapped between the polygons inside and outside.'] }],
+  },
+
+  // =========================================================================
+  // LEVEL 5 — The Asteroid Quarry (Basel problem)
+  // PLACEHOLDER dialogue — npc_dialogue.md has no Level 5 section yet.
+  // =========================================================================
+  level5: {
+    // First time π talks to 5.
+    intro: [
+      {
+        five: [
+          "Pi! I'm 5. Welcome to my quarry.",
+          'Here is a different infinite sum: 1 + 1/4 + 1/9 + 1/16 + 1/25 + ...',
+          'Each term is one over a square number: 1/1², 1/2², 1/3², 1/4² and so on.',
+          'Every term is positive, so the total only ever grows. It never goes down.',
+          'A long time ago a mathematician called Euler showed that if you could add up all of them, forever, you would get π² ÷ 6.',
+          'So if we multiply the total by 6, then take the square root, we get π!',
+          'Let us build it out of rock. My stockpile has a chunk for each of the first 10 terms. The first weighs 1 megatonne, the next 1/4, then 1/9...',
+          'Carry the first one to my asteroid gun, load it, aim with up and down and fire it into orbit round that planet.',
+          'Careful! Aim so it just skims the edge of the orbit. Fire it straight at the planet and it will crash. Too wide and it will miss the orbit altogether.',
+          'Whichever way it is travelling when it reaches the orbit, that is the way it will go round.',
+          'Then fire each chunk after it at the orbiting asteroid. If you miss, it is lost in space, so fetch another of the same size.',
+          'Next, fire my duplicator. It multiplies the asteroid by 6. Then fire my square-root laser at it.',
+          'Whatever is left, bring it to my scale at the top. Its weight should be your value!',
+        ],
+      },
+    ],
+
+    // Talking to 5 before the first rock is in orbit.
+    fireFirstRock: [{ five: ['Take the 1-megatonne rock from the stockpile, load the gun and fire it into orbit.', 'Remember: aim so it just skims the edge of the orbit, not straight at the planet.'] }],
+
+    // Talking to 5 before all MAX_TERMS chunks are in the asteroid. {left}.
+    howAreYouGettingOn: [{ five: ['{left} chunks left in the stockpile. See how small they are getting?'] }],
+
+    // Talking to 5 with every chunk in, before duplicating.
+    readyToDuplicate: [{ five: ['All the chunks are in! Now multiply it by 6. Load the duplicator and fire.'] }],
+
+    // Talking to 5 after duplicating, before the square root.
+    nowSquareRoot: [{ five: ['Six times as heavy! Now take the square root. Load the square-root laser and fire.'] }],
+
+    // Talking to 5 while the final rock is waiting to be picked up.
+    pickUpRock: [{ five: ['There is your rock. Pick it up and take it to the scale at the top.'] }],
+
+    // Talking to 5 while carrying the final rock.
+    weighIt: [{ five: ['Put it on the scale, quickly! That rock is heavy.'] }],
+
+    // After the first weighing, if fewer than the unlock number of terms were used. {value}, {terms}, {needed}.
+    firstCalculation: [
+      {
+        five: [
+          '{value}, from only {terms} terms. Hmm.',
+          'Each chunk is smaller than the last, but they all count. Try again with all {needed}.',
+        ],
+      },
+    ],
+
+    // Said automatically the first time a weighing uses enough terms to open the warp gate. {value}, {terms}.
+    enoughTerms: [
+      {
+        five: [
+          '{terms} terms gives {value}. Now we are getting somewhere!',
+          'Every chunk made the asteroid heavier, never lighter. So is this estimate too high or too low?',
+          'The chunks after these are tiny, but there are infinitely many of them. Do you think they could add up to much?',
+          'Build another as many times as you like. The warp gate is open whenever you are ready.',
+        ],
+      },
+    ],
+
+    // Talking to 5 after the warp gate is open (and no asteroid in orbit).
+    again: [{ five: ['Want to build another? Take the 1-megatonne rock from the stockpile and fire it into orbit.'] }],
   },
 };

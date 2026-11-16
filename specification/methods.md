@@ -14,6 +14,7 @@
 
 ## Monte Carlo / probabilistic
 9. Random point sampling in a square containing a quarter circle — ratio of points inside the circle estimates π/4.
+10. 
 10. Buffon's needle problem — dropping needles on lined paper, using the probability of crossing a line.
 
 ## Continued fractions / products

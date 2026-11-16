@@ -90,6 +90,16 @@ debug menu's demo statistics are the only exception.
    player picks n (3–100), works out the angle 180° ÷ n, then n × sin(angle) (inside) and
    optionally n × tan(angle) (outside); sin/tan values are given. A zoomed inset shows one side
    against the arc. Trying a polygon with ≥ **10** sides opens the warp gate. R replays the demo.
+5. **The Asteroid Quarry** (Basel problem) — **5** explains 1 + 1/4 + 1/9 + … = π²/6, so
+   π = √(6 × sum). Everything is to scale (rock area ∝ mass). Take the next chunk (1, 1/4,
+   1/9 … megatonnes, **10** in all, always all on show) from the stockpile at the bottom, carry it to the gun
+   platform, Enter loads, ↑/↓ aim, Enter fires. The first rock is fired into orbit round a
+   planet, skimming the orbit (too steep crashes, too wide misses); later chunks must hit it.
+   A miss is lost: fetch another of the same chunk. Then the **duplicator** laser (×6: six
+   copies crash back into one rock) and the **square-root** laser (debris flies off, one rock
+   drifts down), in that order. Carry the rock to the scale at the top: its weight is the
+   estimate (10 terms ≈ 3.05), added to the tracker. The total mass is never shown until then.
+   Weighing a rock built from all 10 terms opens the warp gate. R clears everything.
 
 ## Debug
 

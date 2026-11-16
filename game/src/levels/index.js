@@ -12,5 +12,6 @@ import level1 from './level1-orbits.js';
 import level2 from './level2-forge.js';
 import level3 from './level3-asteroids.js';
 import level4 from './level4-polygons.js';
+import level5 from './level5-basel.js';
 
-export const LEVELS = [level0, level1, level2, level3, level4];
+export const LEVELS = [level0, level1, level2, level3, level4, level5];

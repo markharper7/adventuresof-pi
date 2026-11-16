@@ -18,6 +18,7 @@ export const SPRITES = {
   one: 'assets/sprites/npc-one.svg',
   two: 'assets/sprites/npc-two.svg',
   four: 'assets/sprites/npc-four.svg',
+  five: 'assets/sprites/npc-five.svg',
   gate: 'assets/sprites/warp-gate.svg',
   pad: 'assets/sprites/launch-pad.svg',
   planetMoon: 'assets/sprites/planet-moon.svg',
@@ -168,6 +169,31 @@ export const LEVEL_STYLES = {
     bubble: 'rgba(8,34,34,0.92)',
     bubbleBorder: '#5fe0b0',
   },
+  // Level 5 — a rosy quarry orbit where an asteroid is built up chunk by chunk
+  quarry: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    boundary: { kind: 'ring', radius: 3.5, colors: ['#ff9ad5', '#ffd6ef', '#ffc58a'], glow: 'rgba(255,140,200,0.5)', dashed: true },
+    border: 'rgba(255,140,200,0.5)',
+    bgTop: '#0d0614',
+    bgBottom: '#24102a',
+    nebulae: [
+      { x: 0.7, y: 0.45, r: 0.45, color: 'rgba(255,90,170,0.14)' },
+      { x: 0.1, y: 0.85, r: 0.4, color: 'rgba(120,90,255,0.15)' },
+    ],
+    stars: 210,
+    starColors: ['#ffffff', '#ffe0f2', '#e0dcff'],
+    board: 'rgba(40,14,40,0.28)',
+    tileA: 'rgba(255,255,255,0.02)',
+    tileB: null,
+    grid: 'rgba(255,170,220,0.10)',
+    gridDot: null,
+    accent: '#ff9ad5',
+    accentGlow: 'rgba(255,154,213,0.85)',
+    text: '#ffeef8',
+    muted: 'rgba(255,225,240,0.6)',
+    bubble: 'rgba(44,14,40,0.92)',
+    bubbleBorder: '#ff9ad5',
+  },
 };
 
 // Asteroids and the force field (Level 3).
@@ -182,6 +208,36 @@ export const ASTEROID_STYLE = {
   inside: '#ffcf5a',      // landed inside the circle
   outside: '#7fa8ff',     // landed in a corner of the square, outside the circle
   trail: 'rgba(255,220,170,0.6)',
+};
+
+// The asteroid gun, orbit and square of dust (Level 5).
+export const BASEL_STYLE = {
+  rock: '#8a7468',
+  rockLight: '#c2aa9a',
+  rockDark: '#4a3a34',
+  orbit: 'rgba(255,200,230,0.35)',
+  platform: 'rgba(255,154,213,0.8)',
+  aim: 'rgba(255,230,160,0.8)',
+  gun: '#d7dcef',
+  gunBase: '#4a4f6e',
+  gunGlow: 'rgba(255,154,213,0.8)',
+  trail: 'rgba(255,220,170,0.7)',
+  hit: '#ffcf5a',
+  miss: 'rgba(255,120,120,0.9)',
+  beam: 'rgba(160,240,255,0.95)',
+  dup: '#7ff0ff',                      // the duplicator (×6) laser: cell, bolt, crate edge
+  root: '#b4ff6a',                     // the square-root (√) laser: cell, bolt, crate edge
+  cellText: '#10142a',                 // symbol on a laser cell
+  crate: '#2c2f48',
+  final: '#a98a6c',                    // the rock left after the square root
+  finalLight: '#ffe2b0',
+  pileFill: 'rgba(40,20,44,0.85)',     // the stockpile
+  pileEdge: 'rgba(255,154,213,0.7)',
+  label: '#ffcf5a',                    // the next chunk's label, LOADED, the final rock's marker
+  scale: '#b9bfd8',
+  dialBg: 'rgba(30,10,30,0.8)',
+  dialTick: 'rgba(255,225,240,0.6)',
+  needle: '#ffcf5a',
 };
 
 // The polygon projector (Level 4).

@@ -16,6 +16,7 @@
 //   onEnter() -> Promise,                 // optional, runs once when the stage starts
 //   onEvent(name) -> Promise,             // optional: 'help', 'tracker-set', ...
 //   onMove(from, to, dx, dy),             // optional
+//   interceptMove(dx, dy, repeat) -> bool, // optional: use an arrow key for something else (return true = don't move)
 //   tick(now),                            // optional: called every frame / 100 ms, even during popups
 //   onAction() -> Promise<bool>,          // Enter pressed (return true if handled)
 //   onRestart() -> Promise,               // R pressed
@@ -335,6 +336,7 @@ export class Game {
 
   tryMove(dx, dy, repeat) {
     if (!this.stage || this.busy || ui.isOpen()) return;
+    if (this.stage.interceptMove && this.stage.interceptMove(dx, dy, repeat)) return;
     if (this.stage.canMove && !this.stage.canMove()) return;
     const now = performance.now();
     if (now - this.lastMoveAt < CONFIG.moveCooldownMs) {
