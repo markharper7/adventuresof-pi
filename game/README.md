@@ -90,7 +90,7 @@ debug menu's demo statistics are the only exception.
 ## Dialogue
 
 Every line a character speaks is in **`npc_dialogue.js`**, one array per interaction,
-grouped by level. It mirrors `../npc_dialogue.md`, which is the source of truth. `{name}`
+grouped by level. It mirrors `../specification/npc_dialogue.md`, which is the source of truth. `{name}`
 placeholders (e.g. `{value}`) are filled in by the game. Tutorial hints, toasts and
 sidebar text are not dialogue, so they live in the level files.
 
