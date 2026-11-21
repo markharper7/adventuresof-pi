@@ -19,6 +19,7 @@ export const SPRITES = {
   two: 'assets/sprites/npc-two.svg',
   four: 'assets/sprites/npc-four.svg',
   five: 'assets/sprites/npc-five.svg',
+  six: 'assets/sprites/npc-six.svg',
   gate: 'assets/sprites/warp-gate.svg',
   pad: 'assets/sprites/launch-pad.svg',
   planetMoon: 'assets/sprites/planet-moon.svg',
@@ -194,6 +195,31 @@ export const LEVEL_STYLES = {
     bubble: 'rgba(44,14,40,0.92)',
     bubbleBorder: '#ff9ad5',
   },
+  // Level 6 — a deep indigo survey field where beacons are dropped inside orbits
+  lattice: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    boundary: { kind: 'ring', radius: 3.5, colors: ['#ffd166', '#fff3c4', '#9fb4ff'], glow: 'rgba(255,209,102,0.5)', dashed: true },
+    border: 'rgba(255,209,102,0.5)',
+    bgTop: '#05061a',
+    bgBottom: '#141638',
+    nebulae: [
+      { x: 0.6, y: 0.5, r: 0.5, color: 'rgba(255,200,90,0.10)' },
+      { x: 0.1, y: 0.2, r: 0.4, color: 'rgba(90,110,255,0.20)' },
+    ],
+    stars: 220,
+    starColors: ['#ffffff', '#fff3c4', '#d6dcff'],
+    board: 'rgba(16,18,60,0.30)',
+    tileA: 'rgba(255,255,255,0.025)',
+    tileB: null,
+    grid: 'rgba(255,220,150,0.12)',
+    gridDot: null,
+    accent: '#ffd166',
+    accentGlow: 'rgba(255,209,102,0.85)',
+    text: '#fff8e6',
+    muted: 'rgba(255,240,215,0.6)',
+    bubble: 'rgba(20,20,56,0.92)',
+    bubbleBorder: '#ffd166',
+  },
 };
 
 // Asteroids and the force field (Level 3).
@@ -238,6 +264,32 @@ export const BASEL_STYLE = {
   dialBg: 'rgba(30,10,30,0.8)',
   dialTick: 'rgba(255,225,240,0.6)',
   needle: '#ffcf5a',
+};
+
+// Beacons, orbits, survey consoles and the telescope (Level 6).
+export const LATTICE_STYLE = {
+  orbit: 'rgba(255,209,102,0.9)',        // the orbit ring
+  orbitGlow: 'rgba(255,209,102,0.6)',
+  zone: 'rgba(255,240,215,0.22)',        // dashed edge of an orbit's survey zone
+  zoneLocked: 'rgba(255,240,215,0.08)',
+  centre: '#fff3c4',                     // the centre marker
+  label: '#ffd166',
+  beaconPost: '#8a90b8',
+  beacon: '#ffd166',                     // not checked yet
+  inside: '#5dff9a',                     // inside or on the orbit: counts
+  outside: '#ff5d6e',                    // outside the orbit: doesn't count
+  missed: 'rgba(93,255,154,0.9)',        // hollow ring: a tile centre that should have a beacon
+  demoEdge: 'rgba(159,180,255,0.8)',     // the 4 × 4 demonstration square
+  demoBlock: 'rgba(159,180,255,0.35)',
+  console: '#2c3060',
+  consoleGlow: 'rgba(255,209,102,0.9)',
+  scopeTube: '#d7dcef',
+  scopeLeg: '#6a7099',
+  scopeBg: 'rgba(3,4,16,0.93)',          // telescope view
+  lensBg: '#070a24',
+  lensEdge: 'rgba(255,209,102,0.8)',
+  latticeDim: 'rgba(170,180,230,0.28)',
+  sweep: 'rgba(255,209,102,0.25)',
 };
 
 // The polygon projector (Level 4).

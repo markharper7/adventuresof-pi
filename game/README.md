@@ -100,6 +100,18 @@ debug menu's demo statistics are the only exception.
    drifts down), in that order. Carry the rock to the scale at the top: its weight is the
    estimate (10 terms ≈ 3.05), added to the tracker. The total mass is never shown until then.
    Weighing a rock built from all 10 terms opens the warp gate. R clears everything.
+6. **The Beacon Survey** (Gauss circle problem) — **6** gives a docked demonstration: a 4 × 4
+   square with a beacon on every tile centre (16 = the area), then beacons 2 apart (4) and ½ apart
+   (64), so counting only gives the area when the beacons are exactly 1 apart. Then the circle rule:
+   a tile counts if its centre is inside the orbit or exactly on it, and π ≈ beacons ÷ r².
+   Three orbits (radius 1, 2, 3), each centred on a tile with a dotted survey zone round it, unlock in
+   order. Enter on a tile in a zone drops / picks up a beacon. Orbit 1 colours beacons live (green
+   counts, red doesn't); orbits 2 and 3 stay unchecked until the player types their count at the survey
+   console underneath. Then they're checked (green / red, hollow rings for missed centres) and the true
+   count (5, 13, 29) goes into π ≈ count ÷ r², which the player works out (5, 3.25, 3.22). All three
+   open the warp gate and the **telescope**: ↑/↓ radius ±1, ←/→ ±5 (1 to 50), a radar sweep fills
+   the lattice, Enter notes count ÷ r² down to the tracker, Esc leaves. R next to an orbit clears its
+   beacons; elsewhere it replays the demonstration.
 
 ## Debug
 
@@ -108,7 +120,8 @@ debug menu's demo statistics are the only exception.
   missions, force the warp gate open, view or reset save data.
 - URL jumps (level = level number): `index.html?level=0&step=meet`,
   `index.html?level=1&stage=3`, `index.html?level=2&part=5`, `index.html?level=3`.
-  Levels 3 and 4 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried).
+  Levels 3–6 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried,
+  Level 6 orbits already surveyed).
 - Progress, tracker, learned controls and debug settings are saved in the
   browser's localStorage ("Reset save data" in the debug menu starts over).
 - Settings: `game.config.js`.
@@ -152,6 +165,8 @@ src/
     level2-forge.js
     level3-asteroids.js
     level4-polygons.js
+    level5-basel.js
+    level6-lattice.js
 ```
 
 ## Map boundaries

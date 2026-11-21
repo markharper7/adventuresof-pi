@@ -27,6 +27,7 @@ export const CHARACTERS = {
   three: { name: '3', sprite: 'three' },
   four: { name: '4', sprite: 'four' },
   five: { name: '5', sprite: 'five' },
+  six: { name: '6', sprite: 'six' },
 };
 
 export const DIALOGUE = {
@@ -440,5 +441,135 @@ export const DIALOGUE = {
 
     // Talking to 5 after the warp gate is open (and no asteroid in orbit).
     again: [{ five: ['Want to build another? Take the 1-megatonne rock from the stockpile and fire it into orbit.'] }],
+  },
+
+  // =========================================================================
+  // LEVEL 6 — The Beacon Survey (Gauss circle problem)
+  // PLACEHOLDER dialogue — npc_dialogue.md has no Level 6 section yet.
+  // =========================================================================
+  level6: {
+    // First time π talks to 6: a demonstration, one interaction per part.
+    // Docked at the bottom so the drawing changes behind it.
+    demo: {
+      // (the 4 × 4 square is empty)
+      intro: [
+        {
+          six: [
+            "Pi! I'm 6. I survey star systems by counting.",
+            'A long time ago a mathematician called Gauss had a clever idea: you can measure the area of a circle just by counting dots.',
+            'Let me show you how. Look at the square in the top corner.',
+          ],
+        },
+      ],
+      // one beacon on the centre of every tile: 16
+      unit: [
+        {
+          six: [
+            'It is 4 tiles wide and 4 tiles tall, so its area is 4 × 4 = 16.',
+            'I have put one beacon on the centre of every tile. Count them: 16 beacons.',
+            '16 beacons, area 16. The count IS the area!',
+          ],
+        },
+      ],
+      // beacons 2 apart: 4
+      wide: [
+        {
+          six: [
+            'But watch what happens if the beacons are 2 apart instead of 1.',
+            'Now there are only 4 beacons. The square has not changed. Its area is still 16!',
+            'Each beacon now stands for a 2 × 2 patch, not a 1 × 1 tile.',
+          ],
+        },
+      ],
+      // beacons ½ apart: 64
+      dense: [
+        {
+          six: [
+            'And if they are only half a tile apart...',
+            '64 beacons! Far too many, and the area is still 16.',
+            'So remember: counting beacons only gives you the area when they are exactly 1 apart. One beacon per tile.',
+          ],
+        },
+      ],
+      // the first orbit pulses
+      circle: [
+        {
+          six: [
+            'Now for circles. Out there are three orbits, with radius 1, 2 and 3 tiles.',
+            'Drop a beacon on the centre of every tile that is inside the orbit, or exactly on it.',
+            "If a tile's centre is outside the orbit, its beacon does not count, even if part of the tile is inside.",
+            'The number of beacons is roughly the area of the circle. And the area of a circle is π × r × r.',
+            'So π ≈ number of beacons ÷ r². Just count and divide!',
+          ],
+        },
+      ],
+      howTo: [
+        {
+          six: [
+            'Stand on a tile near an orbit and press Enter to drop a beacon. Press Enter again to pick it up.',
+            'In the first orbit your beacons light up straight away: green inside, red outside.',
+            'In the next two you are on your own! When you have finished, use the survey console under the orbit and tell me your count. Then I will check your beacons.',
+            'Survey all three orbits and the warp gate will power up.',
+          ],
+        },
+      ],
+    },
+
+    // Talking to 6 while an orbit is still to be surveyed.
+    orbit1: [{ six: ['Start with the smallest orbit, radius 1. Drop a beacon on every tile centre inside it, or on it.', 'Then use the survey console underneath.'] }],
+    orbit2: [{ six: ['Next, the orbit with radius 2. No colours to help you this time!', 'Count carefully, then use the survey console underneath.'] }],
+    orbit3: [{ six: ['Last one: radius 3. That is a lot of beacons. Work round it row by row.'] }],
+
+    // After the console check, when every beacon was right and the count matched. {count}.
+    checkPerfect: [{ six: ['{count} beacons, every one in the right place, and you counted them all. Perfect surveying!'] }],
+
+    // After the console check, when something was wrong. {said}, {count}.
+    checkFixed: [
+      {
+        six: [
+          'You counted {said}. Let me check your beacons...',
+          'Green beacons are inside or on the orbit. Red ones are outside it, so they do not count. Hollow rings are tile centres you missed.',
+          'The true count for this orbit is {count}. Let us use that.',
+        ],
+      },
+    ],
+
+    // After working out π for each orbit. {value}.
+    orbit1Done: [
+      {
+        six: [
+          '{value}?! That is nowhere near 3, is it?',
+          'A circle this small is nearly all edge, and square tiles cannot follow the curve. Try a bigger orbit.',
+        ],
+      },
+    ],
+    orbit2Done: [{ six: ['{value}. Much better than 5!', 'The bigger the circle, the less the jagged edge matters. On to the last orbit.'] }],
+    // Said the first time all three orbits are done (opens the warp gate). {value}.
+    allDone: [
+      {
+        six: [
+          '{value} from the radius 3 orbit.',
+          'See how the estimate got closer as the circle grew? 5, then 3.25, then 3.22.',
+          'Bigger circles would need hundreds of beacons. Luckily my telescope can see circles other surveyors have already filled in.',
+          'Look at circles as big as you like. The warp gate is open whenever you are ready.',
+        ],
+      },
+    ],
+    // When the orbits are re-surveyed after the gate is open. {value}.
+    orbitAgain: [{ six: ['{value} again. Same circle, same count, same answer. Only a bigger circle can do better.'] }],
+
+    // The first time π looks through the telescope.
+    telescopeFirst: [
+      {
+        six: [
+          'This telescope looks at circles that other surveyors have already filled with beacons.',
+          'Up and down change the radius by 1. Left and right jump by 5. Press Enter to note down the estimate.',
+          'Watch how count ÷ r² settles down as the circle gets bigger.',
+        ],
+      },
+    ],
+
+    // Talking to 6 after the warp gate is open.
+    again: [{ six: ['Bigger circles, better estimates. But even huge ones still wobble a little. Try the telescope and see!'] }],
   },
 };
