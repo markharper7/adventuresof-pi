@@ -21,6 +21,7 @@ export const SPRITES = {
   five: 'assets/sprites/npc-five.svg',
   six: 'assets/sprites/npc-six.svg',
   seven: 'assets/sprites/npc-seven.svg',
+  eight: 'assets/sprites/npc-eight.svg',
   gate: 'assets/sprites/warp-gate.svg',
   pad: 'assets/sprites/launch-pad.svg',
   planetMoon: 'assets/sprites/planet-moon.svg',
@@ -246,6 +247,47 @@ export const LEVEL_STYLES = {
     bubble: 'rgba(8,36,40,0.92)',
     bubbleBorder: '#5ce1e6',
   },
+  // Level 8 — a dark plum debris field crossed by evenly spaced laser lanes
+  buffon: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    boundary: { kind: 'ring', radius: 3.5, colors: ['#ff7a9c', '#ffe0e8', '#b9a4ff'], glow: 'rgba(255,122,156,0.5)', dashed: true },
+    border: 'rgba(255,122,156,0.5)',
+    bgTop: '#0c0512',
+    bgBottom: '#1f0c26',
+    nebulae: [
+      { x: 0.5, y: 0.45, r: 0.5, color: 'rgba(255,90,140,0.12)' },
+      { x: 0.1, y: 0.85, r: 0.4, color: 'rgba(140,110,255,0.16)' },
+    ],
+    stars: 210,
+    starColors: ['#ffffff', '#ffe0e8', '#e0dcff'],
+    board: 'rgba(36,12,40,0.28)',
+    tileA: 'rgba(255,255,255,0.02)',
+    tileB: null,
+    grid: 'rgba(255,170,200,0.10)',
+    gridDot: null,
+    accent: '#ff7a9c',
+    accentGlow: 'rgba(255,122,156,0.85)',
+    text: '#fff0f4',
+    muted: 'rgba(255,225,235,0.6)',
+    bubble: 'rgba(40,12,36,0.92)',
+    bubbleBorder: '#ff7a9c',
+  },
+};
+
+// Laser lanes, debris rods and crates (Level 8).
+export const BUFFON_STYLE = {
+  lane: 'rgba(255,90,130,0.95)',        // a laser lane
+  laneGlow: 'rgba(255,90,130,0.8)',
+  fieldFill: 'rgba(255,90,130,0.05)',   // the drop zone behind the lanes
+  fieldEdge: 'rgba(255,224,232,0.25)',
+  rod: '#9aa3bf',                       // a rod that lies between two lanes
+  cross: '#ffd166',                     // a rod that crosses a lane (lights up)
+  crossGlow: 'rgba(255,209,102,0.8)',
+  flying: 'rgba(230,235,255,0.85)',
+  crate: '#2c2140',
+  crateEdge: 'rgba(255,122,156,0.75)',
+  ruler: 'rgba(185,164,255,0.9)',       // the "rod length = lane gap" marker
+  label: '#ffd166',
 };
 
 // Asteroids and the force field (Level 3).

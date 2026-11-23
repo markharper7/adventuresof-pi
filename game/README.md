@@ -126,6 +126,15 @@ debug menu's demo statistics are the only exception.
    doubles it (added to the tracker). In order the estimates hop above and below π (9 fractions 3.30,
    10 fractions 3.00). A scan with all 10 opens the warp gate. R clears the fraction to 1 / 1.
 
+8. **The Laser Lanes** (Buffon's needle) — **8** explains the method. Horizontal laser lanes cross a
+   field in the middle, all 2 squares apart. Crates along the bottom hold debris rods exactly as long as
+   the gap (×1, ×10 or ×100, Enter next to a crate). Enter next to the field scatters everything carried.
+   Each rod's resting place (centre uniform over the field) and angle (uniform over 0–180°) are random;
+   the tumbling flight is just for show. Rods across a lane light up. **C** calculates
+   π ≈ 2 × dropped ÷ crossing at any time and adds it to the tracker. A calculation with ≥ **100** rods
+   opens the warp gate, and 8 then points out there is no circle anywhere (open question: the rods'
+   angles). R clears the field.
+
 ## Debug
 
 - ` or F9 opens the debug menu: jump to any level / stage / Level 0 step / Level 2
@@ -133,7 +142,7 @@ debug menu's demo statistics are the only exception.
   missions, force the warp gate open, view or reset save data.
 - URL jumps (level = level number): `index.html?level=0&step=meet`,
   `index.html?level=1&stage=3`, `index.html?level=2&part=5`, `index.html?level=3`.
-  Levels 3–7 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried,
+  Levels 3–8 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried,
   Level 6 orbits already surveyed, Level 7 fractions already fired).
 - Progress, tracker, learned controls and debug settings are saved in the
   browser's localStorage ("Reset save data" in the debug menu starts over).
@@ -182,6 +191,7 @@ src/
     level5-basel.js
     level6-lattice.js
     level7-wallis.js
+    level8-buffon.js
 ```
 
 ## Map boundaries

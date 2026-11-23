@@ -29,6 +29,7 @@ export const CHARACTERS = {
   five: { name: '5', sprite: 'five' },
   six: { name: '6', sprite: 'six' },
   seven: { name: '7', sprite: 'seven' },
+  eight: { name: '8', sprite: 'eight' },
 };
 
 export const DIALOGUE = {
@@ -630,5 +631,60 @@ export const DIALOGUE = {
 
     // Talking to 7 after the warp gate is open.
     again: [{ seven: ['Press R to clear the fraction back to 1 over 1. Try scanning after every fraction, and watch it zig-zag round π.'] }],
+  },
+
+  // =========================================================================
+  // LEVEL 8 — The Laser Lanes (Buffon's needle)
+  // PLACEHOLDER dialogue — npc_dialogue.md has no Level 8 section yet.
+  // =========================================================================
+  level8: {
+    // First time π talks to 8.
+    intro: [
+      {
+        eight: [
+          "Pi! I'm 8. Welcome to the Laser Lanes.",
+          'See the glowing lines across the field? They are laser lanes, and they are all exactly the same distance apart.',
+          'Now look in the crates. Each piece of space debris is a straight rod, exactly as long as the gap between two lanes.',
+          'A long time ago, a French count called Buffon dropped needles onto a floor made of planks and asked a question.',
+          'How likely is it that a needle lands across one of the lines between the planks?',
+          'Drop some rods into the field and find out. Each one lands in a random place, pointing in a random direction.',
+          'Some will lie neatly between two lanes. Others will cross a lane and light up.',
+          'Take rods from the crates (1, 10 or 100 at a time), walk up to the field and press Enter to scatter them.',
+          'Then press C whenever you like to count up and calculate: π ≈ 2 × rods dropped ÷ rods crossing a lane.',
+        ],
+      },
+    ],
+
+    // Talking to 8 before anything has been dropped.
+    nothingDroppedYet: [{ eight: ['The crates are along the bottom. Grab some rods and scatter them over the lanes.'] }],
+
+    // Talking to 8 after dropping but before calculating.
+    notCalculatedYet: [{ eight: ['Press C whenever you like to count the rods and calculate.'] }],
+
+    // After the first calculation, if fewer than the unlock number of rods were dropped. {value}, {total}.
+    firstCalculation: [
+      {
+        eight: [
+          '{value}, from {total} rods. Interesting...',
+          'A handful of rods is a bit of a gamble. What happens if you drop a lot more?',
+        ],
+      },
+    ],
+
+    // Said automatically the first time a calculation uses enough rods to open the warp gate. {value}, {total}.
+    enoughDropped: [
+      {
+        eight: [
+          '{total} rods gives {value}. Now we are getting somewhere!',
+          'But wait. Look around the field. Can you see a circle anywhere?',
+          'No circles. No orbits. Just straight lines and straight rods. And yet there you are, Pi.',
+          'Where do you think you are hiding? Here is a clue: think about which way the rods point when they land.',
+          'Keep dropping for as long as you like. The warp gate is open whenever you are ready.',
+        ],
+      },
+    ],
+
+    // Talking to 8 after the warp gate is open.
+    again: [{ eight: ['Every rod spins as it falls. Somewhere in all that spinning there is a circle... Press R to clear the field.'] }],
   },
 };

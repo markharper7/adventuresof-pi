@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- outline -->
+    <circle cx="32" cy="20" r="10" stroke="#5a1030" stroke-width="13"/>
+    <circle cx="32" cy="44" r="12" stroke="#5a1030" stroke-width="13"/>
+    <!-- body -->
+    <circle cx="32" cy="20" r="10" stroke="#ff7a9c" stroke-width="8"/>
+    <circle cx="32" cy="44" r="12" stroke="#ff7a9c" stroke-width="8"/>
+    <!-- shine -->
+    <path d="M25 14 Q28 10 33 10" stroke="#ffe0e8" stroke-width="2" opacity="0.7"/>
+    <path d="M23 37 Q27 33 33 33" stroke="#ffe0e8" stroke-width="2" opacity="0.7"/>
+  </g>
+  <!-- eyes -->
+  <circle cx="27" cy="19" r="4.0" fill="#ffffff" stroke="#5a1030" stroke-width="1"/>
+  <circle cx="27.8" cy="19.5" r="2.08" fill="#0b1640"/>
+  <circle cx="37" cy="19" r="4.0" fill="#ffffff" stroke="#5a1030" stroke-width="1"/>
+  <circle cx="37.8" cy="19.5" r="2.08" fill="#0b1640"/>
+</svg>

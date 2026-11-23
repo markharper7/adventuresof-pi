@@ -15,5 +15,6 @@ import level4 from './level4-polygons.js';
 import level5 from './level5-basel.js';
 import level6 from './level6-lattice.js';
 import level7 from './level7-wallis.js';
+import level8 from './level8-buffon.js';
 
-export const LEVELS = [level0, level1, level2, level3, level4, level5, level6, level7];
+export const LEVELS = [level0, level1, level2, level3, level4, level5, level6, level7, level8];
