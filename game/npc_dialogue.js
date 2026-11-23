@@ -30,6 +30,7 @@ export const CHARACTERS = {
   six: { name: '6', sprite: 'six' },
   seven: { name: '7', sprite: 'seven' },
   eight: { name: '8', sprite: 'eight' },
+  nine: { name: '9', sprite: 'nine' },
 };
 
 export const DIALOGUE = {
@@ -686,5 +687,70 @@ export const DIALOGUE = {
 
     // Talking to 8 after the warp gate is open.
     again: [{ eight: ['Every rod spins as it falls. Somewhere in all that spinning there is a circle... Press R to clear the field.'] }],
+  },
+
+  // =========================================================================
+  // LEVEL 9 — The Friendship Portal (coprime probability)
+  // PLACEHOLDER dialogue — npc_dialogue.md has no Level 9 section yet.
+  // =========================================================================
+  level9: {
+    // First time π talks to 9.
+    intro: [
+      {
+        nine: [
+          "Pi! I'm 9. Three times three, so I always get on with 3... we both have a 3 inside us.",
+          'Numbers are fussy about who they make friends with. If two numbers share a factor, they push each other away.',
+          'A factor is a whole number that divides in exactly. 12 and 18 can both be divided by 6, so they share a factor. They will not get on.',
+          'But 8 and 15? Nothing divides both of them except 1. They have nothing in common, so they become friends. Mathematicians call them <b>coprime</b>.',
+          'The portal at the top sends out two random numbers from 1 to 100. They meet in the ring in the middle.',
+          'Use the consoles at the bottom. First, call out one pair at a time and judge them yourself. Do they share a factor or not?',
+          'After {hand} pairs you can call out 10 or 100 at a time, and the portal will judge them for you.',
+          'Here is the strange part. The fraction of pairs that become friends is 6 ÷ π². Press C whenever you like to calculate.',
+        ],
+      },
+    ],
+
+    // Talking to 9 while still judging pairs by hand. {done}, {hand}.
+    handProgress: [{ nine: ['{done} of {hand} pairs judged. Use the ×1 console to call out another pair.'] }],
+
+    // Said automatically after the last pair judged by hand. {right}, {hand}.
+    handDone: [
+      {
+        nine: [
+          'You got {right} out of {hand} right. Checking factors by hand is hard work!',
+          'Now you can use the ×10 and ×100 consoles. The portal will judge every pair for you.',
+          'Watch the two pens fill up. About how many pairs end up as friends?',
+        ],
+      },
+    ],
+
+    // Talking to 9 after judging by hand but before calculating.
+    notCalculatedYet: [{ nine: ['Press C whenever you like to count up the friends and calculate.'] }],
+
+    // After the first calculation, if fewer than the unlock number of pairs were made. {value}, {total}.
+    firstCalculation: [
+      {
+        nine: [
+          '{value}, from {total} pairs. Hmm, not many pairs yet.',
+          'Random numbers need big crowds. Try calling out a hundred at a time.',
+        ],
+      },
+    ],
+
+    // Said automatically the first time a calculation uses enough pairs to open the warp gate. {value}, {total}.
+    enoughPairs: [
+      {
+        nine: [
+          '{total} pairs gives {value}. Lovely!',
+          'Do you remember 5, back at the Asteroid Quarry? 1 + 1/4 + 1/9 + 1/16 + … added up to π² ÷ 6.',
+          'Here, the chance of two numbers being friends is 6 ÷ π². The very same number, flipped upside down!',
+          'Why would friendship between numbers have anything to do with circles? Have a think about it.',
+          'Keep calling pairs for as long as you like. The warp gate is open whenever you are ready.',
+        ],
+      },
+    ],
+
+    // Talking to 9 after the warp gate is open.
+    again: [{ nine: ['About 61 out of every 100 pairs become friends. Press R to empty the pens and start counting again.'] }],
   },
 };

@@ -135,6 +135,15 @@ debug menu's demo statistics are the only exception.
    opens the warp gate, and 8 then points out there is no circle anywhere (open question: the rods'
    angles). R clears the field.
 
+9. **The Friendship Portal** (coprime probability) — **9** explains factors and coprime numbers. A number
+   portal at the top sends out pairs of random numbers (1–100) to a meeting ring in the middle. Pairs that
+   share a factor bump and push apart (the shared factor, their gcd, is shown) into the SHARE A FACTOR pen;
+   coprime pairs link up and go to the FRIENDS pen. Consoles along the bottom call out ×1, ×10 or ×100
+   pairs. The first **5** pairs come one at a time and the player judges each one before the answer is shown;
+   that unlocks ×10 and ×100, which the portal judges automatically. **C** calculates
+   π ≈ √(6 × pairs ÷ friends) at any time and adds it to the tracker. A calculation with ≥ **100** pairs opens
+   the warp gate, and 9 links 6/π² back to the Basel sum from Level 5. R empties the pens.
+
 ## Debug
 
 - ` or F9 opens the debug menu: jump to any level / stage / Level 0 step / Level 2
@@ -142,7 +151,7 @@ debug menu's demo statistics are the only exception.
   missions, force the warp gate open, view or reset save data.
 - URL jumps (level = level number): `index.html?level=0&step=meet`,
   `index.html?level=1&stage=3`, `index.html?level=2&part=5`, `index.html?level=3`.
-  Levels 3–8 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried,
+  Levels 3–9 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried,
   Level 6 orbits already surveyed, Level 7 fractions already fired).
 - Progress, tracker, learned controls and debug settings are saved in the
   browser's localStorage ("Reset save data" in the debug menu starts over).
@@ -192,6 +201,7 @@ src/
     level6-lattice.js
     level7-wallis.js
     level8-buffon.js
+    level9-coprime.js
 ```
 
 ## Map boundaries

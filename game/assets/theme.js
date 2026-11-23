@@ -22,6 +22,7 @@ export const SPRITES = {
   six: 'assets/sprites/npc-six.svg',
   seven: 'assets/sprites/npc-seven.svg',
   eight: 'assets/sprites/npc-eight.svg',
+  nine: 'assets/sprites/npc-nine.svg',
   gate: 'assets/sprites/warp-gate.svg',
   pad: 'assets/sprites/launch-pad.svg',
   planetMoon: 'assets/sprites/planet-moon.svg',
@@ -272,6 +273,50 @@ export const LEVEL_STYLES = {
     bubble: 'rgba(40,12,36,0.92)',
     bubbleBorder: '#ff7a9c',
   },
+  // Level 9 — a leafy green plaza where random pairs of numbers meet
+  coprime: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    boundary: { kind: 'nebula', radius: 3.5, colors: ['rgba(140,255,100,0.4)', 'rgba(60,200,170,0.35)', 'rgba(200,255,140,0.3)'], glow: 'rgba(157,255,106,0.55)' },
+    border: 'rgba(157,255,106,0.5)',
+    bgTop: '#040d08',
+    bgBottom: '#0d2218',
+    nebulae: [
+      { x: 0.5, y: 0.4, r: 0.5, color: 'rgba(120,255,120,0.10)' },
+      { x: 0.9, y: 0.85, r: 0.4, color: 'rgba(60,180,255,0.12)' },
+    ],
+    stars: 200,
+    starColors: ['#ffffff', '#efffe0', '#d6f0ff'],
+    board: 'rgba(10,36,20,0.28)',
+    tileA: 'rgba(255,255,255,0.02)',
+    tileB: null,
+    grid: 'rgba(180,255,170,0.10)',
+    gridDot: null,
+    accent: '#9dff6a',
+    accentGlow: 'rgba(157,255,106,0.85)',
+    text: '#f0ffe8',
+    muted: 'rgba(225,255,215,0.6)',
+    bubble: 'rgba(12,36,20,0.92)',
+    bubbleBorder: '#9dff6a',
+  },
+};
+
+// The number portal, meeting ring and pens (Level 9).
+export const COPRIME_STYLE = {
+  portal: ['#9dff6a', '#3fd0c8', '#efffe0'], // swirl colours
+  portalBase: '#1d3a2a',
+  ring: 'rgba(239,255,224,0.6)',
+  ringGlow: 'rgba(157,255,106,0.6)',
+  bubble: '#e9f2ff',                     // a number on its way to the ring
+  bubbleEdge: '#3a5a7a',
+  bubbleText: '#0b1640',
+  friend: '#7dffa8',                     // coprime: no common factor
+  friendGlow: 'rgba(125,255,168,0.85)',
+  apart: '#ff9a6b',                      // share a factor
+  apartGlow: 'rgba(255,154,107,0.85)',
+  penFill: 'rgba(8,26,16,0.6)',
+  console: '#1d3a2a',
+  consoleEdge: 'rgba(157,255,106,0.75)',
+  label: '#ffd166',
 };
 
 // Laser lanes, debris rods and crates (Level 8).
