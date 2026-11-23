@@ -32,6 +32,7 @@ export const CHARACTERS = {
   eight: { name: '8', sprite: 'eight' },
   nine: { name: '9', sprite: 'nine' },
   ten: { name: '10', sprite: 'ten' },
+  eleven: { name: '11', sprite: 'eleven' },
 };
 
 export const DIALOGUE = {
@@ -821,5 +822,81 @@ export const DIALOGUE = {
 
     // Talking to 10 after the warp gate is open.
     again: [{ ten: ['Press R to put both stars back to the start and race again.'] }],
+  },
+
+  // =========================================================================
+  // LEVEL 11 — The Collision Course (colliding blocks)
+  // PLACEHOLDER dialogue — npc_dialogue.md has no Level 11 section yet.
+  // =========================================================================
+  level11: {
+    // First time π talks to 11.
+    intro: [
+      {
+        eleven: [
+          "Pi! I'm 11. Welcome to the Collision Course, the edge of the explored universe.",
+          'No series, no circles, no random numbers this time. Just two rocks, a wall, and some counting.',
+          'See the little rock on the track? It weighs exactly 1 tonne. Behind it is an energy shield. Nothing gets through it, and anything that hits it bounces straight back.',
+          'Out here there is no friction, and these rocks are perfectly bouncy. Nothing is ever lost in a bounce.',
+          'The big asteroids are on the pads below. Pick one up, carry it to the start mark on the track and put it down. Off it goes towards the little rock.',
+          'The little rock gets squashed between the big one and the shield, bouncing back and forth again and again, until everything flies away.',
+          'Count the collisions. Every bump counts, rock against rock and rock against the shield.',
+          'Start with the 1 tonne asteroid. Same weight as the little rock.',
+        ],
+      },
+    ],
+
+    // Talking to 11 between runs. {next} = the mass of the next asteroid to try.
+    progress: [{ eleven: ['Try the {next} asteroid next. Count carefully!'] }],
+
+    // After the first run of each asteroid. {count} = collisions, {mass} = its mass.
+    after: [
+      // 1 t
+      [{ eleven: ['{count} collisions. Remember that number.', 'Now try the 100 tonne asteroid. It is a hundred times heavier. Those collisions come too fast to count, so the collision counter will count them for you.'] }],
+      // 100 t
+      [{ eleven: ['{count} collisions. Three... then thirty-one. Hmm.', 'The next one is 10,000 tonnes, a hundred times heavier again.'] }],
+      // 10,000 t (opens the warp gate)
+      [
+        {
+          eleven: [
+            '{count}.',
+            '3. Then 31. Then 314.',
+            'Pi... look at your tracker. Those are your digits.',
+          ],
+        },
+        {
+          pi: [
+            'Three, point one, four... That is me. That is who I am!',
+          ],
+        },
+        {
+          eleven: [
+            'Nobody told these rocks about circles. They just bounce. And yet there you are, hiding in the collisions.',
+            'Why? That is a question for you to take home.',
+            'The warp gate is open. Or try the heavier asteroids, and see how many more of your digits you can find.',
+          ],
+        },
+      ],
+      // 1,000,000 t
+      [{ eleven: ['{count} collisions! Another digit.', 'There is one more asteroid, if you dare. 100 million tonnes.'] }],
+      // 100,000,000 t
+      [
+        {
+          eleven: [
+            '{count} collisions. Five digits of you, from rocks bouncing off a wall.',
+            'Every hundred times heavier gives one more digit. Forever, if you had a big enough asteroid.',
+            'I have opened one more pad for you. On it you can build an asteroid of any mass you like. What happens if it is not a hundred times heavier?',
+          ],
+        },
+      ],
+    ],
+
+    // Talking to 11 after the warp gate is open.
+    again: [{ eleven: ['Press R to watch the last run again. Every hundred times heavier, one more digit appears.'] }],
+
+    // Talking to 11 once all five asteroids are done and the custom pad is open.
+    extras: [{ eleven: ['Build an asteroid of any mass you like and count its collisions. Keep an eye on the counter.'] }],
+
+    // After the first run from the custom pad. {count} = collisions, {mass} = its mass.
+    custom: [{ eleven: ['{mass}: {count} collisions. Is that you, Pi? Try some other masses and see.'] }],
   },
 };

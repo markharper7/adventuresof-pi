@@ -18,5 +18,6 @@ import level7 from './level7-wallis.js';
 import level8 from './level8-buffon.js';
 import level9 from './level9-coprime.js';
 import level10 from './level10-race.js';
+import level11 from './level11-clink.js';
 
-export const LEVELS = [level0, level1, level2, level3, level4, level5, level6, level7, level8, level9, level10];
+export const LEVELS = [level0, level1, level2, level3, level4, level5, level6, level7, level8, level9, level10, level11];

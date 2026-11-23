@@ -159,6 +159,19 @@ debug menu's demo statistics are the only exception.
    tracker. **4** fractions open the warp gate; there are **8** in all. Afterwards 2 can feed the Leibniz star
    1000 more terms, and it still isn't as close. R restarts the race.
 
+11. **The Collision Course** (colliding blocks, the finale) — **11** explains the setup: a 1 tonne rock on a
+   frictionless track in front of an energy shield (a wall that everything bounces off perfectly), and perfectly bouncy rocks. Five pads hold asteroids
+   of 1 t, 100 t, 10,000 t, 1,000,000 t and 100,000,000 t (each unlocks after the one before). Enter next to a pad
+   picks that asteroid up; π carries it to the START mark on the track and Enter puts it down and sends it off; the little rock is squashed against the shield, again and again.
+   The number of collisions is the digits of π: 3, 31, 314, 3141, 31415. The physics is exact (event based: each
+   next collision is worked out, no time steps) and every run plays back at one steady speed; every collision
+   flashes and makes a short synthesised clink sound. For 1 t the counter is hidden and the player counts
+   the collisions themselves (they can watch again) before the true count is shown; after that a live counter is shown.
+   Each run adds collisions ÷ 10ⁿ to the tracker (3, 3.1, 3.14 …). The 10,000 t run opens the warp gate (to the mission
+   log), and "why?" is left as an open question. R watches the last run again.
+   Once all five are done, an optional **custom** pad opens (it doesn't affect the gate) where the player types
+   any mass from 1 t to 100,000,000 t: just the count, nothing goes to the tracker.
+
 ## Debug
 
 - ` or F9 opens the debug menu: jump to any level / stage / Level 0 step / Level 2
@@ -166,7 +179,7 @@ debug menu's demo statistics are the only exception.
   missions, force the warp gate open, view or reset save data.
 - URL jumps (level = level number): `index.html?level=0&step=meet`,
   `index.html?level=1&stage=3`, `index.html?level=2&part=5`, `index.html?level=3`.
-  Levels 3–10 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried,
+  Levels 3–11 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried,
   Level 6 orbits already surveyed, Level 7 fractions already fired).
 - Progress, tracker, learned controls and debug settings are saved in the
   browser's localStorage ("Reset save data" in the debug menu starts over).
@@ -218,6 +231,7 @@ src/
     level8-buffon.js
     level9-coprime.js
     level10-race.js
+    level11-clink.js
 ```
 
 ## Map boundaries

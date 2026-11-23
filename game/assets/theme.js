@@ -24,6 +24,7 @@ export const SPRITES = {
   eight: 'assets/sprites/npc-eight.svg',
   nine: 'assets/sprites/npc-nine.svg',
   ten: 'assets/sprites/npc-ten.svg',
+  eleven: 'assets/sprites/npc-eleven.svg',
   gate: 'assets/sprites/warp-gate.svg',
   pad: 'assets/sprites/launch-pad.svg',
   planetMoon: 'assets/sprites/planet-moon.svg',
@@ -325,6 +326,54 @@ export const LEVEL_STYLES = {
     bubble: 'rgba(40,24,10,0.92)',
     bubbleBorder: '#ffb547',
   },
+  // Level 11 — a quiet violet dock where asteroids bounce off an energy shield
+  clink: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    boundary: { kind: 'ring', radius: 3.5, colors: ['#c49bff', '#f1e6ff', '#9fd8ff'], glow: 'rgba(196,155,255,0.5)', dashed: true },
+    border: 'rgba(196,155,255,0.5)',
+    bgTop: '#07051a',
+    bgBottom: '#171236',
+    nebulae: [
+      { x: 0.15, y: 0.35, r: 0.4, color: 'rgba(160,110,255,0.16)' },
+      { x: 0.85, y: 0.7, r: 0.45, color: 'rgba(90,170,255,0.12)' },
+    ],
+    stars: 230,
+    starColors: ['#ffffff', '#f1e6ff', '#d6e8ff'],
+    board: 'rgba(20,14,56,0.28)',
+    tileA: 'rgba(255,255,255,0.02)',
+    tileB: null,
+    grid: 'rgba(210,180,255,0.10)',
+    gridDot: null,
+    accent: '#c49bff',
+    accentGlow: 'rgba(196,155,255,0.85)',
+    text: '#f4eeff',
+    muted: 'rgba(235,225,255,0.6)',
+    bubble: 'rgba(24,16,60,0.92)',
+    bubbleBorder: '#c49bff',
+  },
+};
+
+// The energy shield, the track, the asteroids and the collision counter (Level 11).
+export const CLINK_STYLE = {
+  shield: '#bff0ff',                   // the shield's face
+  shieldGlow: 'rgba(120,210,255,0.95)',
+  shieldFill: 'rgba(120,210,255,0.28)', // the glow behind the face
+  shieldBand: 'rgba(191,240,255,0.25)', // shimmering bands in the field
+  pylon: '#4a4f6e',                    // the two emitters holding the shield up
+  pylonLight: '#b9c0dc',
+  track: 'rgba(241,230,255,0.35)',
+  small: ['#d8d0f0', '#9a90b8', '#4a4466'], // the 1 t rock: light, mid, dark
+  big: ['#c2aa9a', '#8a7468', '#4a3a34'],   // the big rocks
+  label: '#ffd166',
+  flashShield: 'rgba(159,216,255,0.95)', // a collision against the shield
+  flashRock: 'rgba(255,209,102,0.95)', // a clink between the rocks
+  counterBg: 'rgba(8,6,24,0.85)',
+  counterEdge: 'rgba(196,155,255,0.7)',
+  counter: '#ffd166',
+  hidden: 'rgba(241,230,255,0.45)',    // the "? ? ?" while the player counts
+  pad: 'rgba(24,18,56,0.9)',
+  padEdge: 'rgba(196,155,255,0.75)',
+  padDone: '#7dffa8',
 };
 
 // The twin stars, number stones and chart (Level 10). Crystals reuse PIECE_STYLES.
