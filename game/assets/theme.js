@@ -23,6 +23,7 @@ export const SPRITES = {
   seven: 'assets/sprites/npc-seven.svg',
   eight: 'assets/sprites/npc-eight.svg',
   nine: 'assets/sprites/npc-nine.svg',
+  ten: 'assets/sprites/npc-ten.svg',
   gate: 'assets/sprites/warp-gate.svg',
   pad: 'assets/sprites/launch-pad.svg',
   planetMoon: 'assets/sprites/planet-moon.svg',
@@ -298,6 +299,59 @@ export const LEVEL_STYLES = {
     bubble: 'rgba(12,36,20,0.92)',
     bubbleBorder: '#9dff6a',
   },
+  // Level 10 — a golden twin-star racetrack: Leibniz against Nilakantha
+  race: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    boundary: { kind: 'nebula', radius: 3.5, colors: ['rgba(255,170,60,0.45)', 'rgba(255,220,120,0.35)', 'rgba(90,140,255,0.4)'], glow: 'rgba(255,181,71,0.6)' },
+    border: 'rgba(255,181,71,0.55)',
+    bgTop: '#0d0806',
+    bgBottom: '#24160c',
+    nebulae: [
+      { x: 0.3, y: 0.45, r: 0.4, color: 'rgba(90,150,255,0.14)' },
+      { x: 0.65, y: 0.45, r: 0.4, color: 'rgba(255,160,60,0.16)' },
+    ],
+    stars: 200,
+    starColors: ['#ffffff', '#fff1d6', '#d6e2ff'],
+    board: 'rgba(40,24,10,0.25)',
+    tileA: 'rgba(255,255,255,0.025)',
+    tileB: 'rgba(0,0,0,0.08)',
+    grid: 'rgba(255,200,140,0.11)',
+    gridDot: null,
+    accent: '#ffb547',
+    accentGlow: 'rgba(255,181,71,0.85)',
+    chartBg: 'rgba(14,8,4,0.6)',
+    text: '#fff3e2',
+    muted: 'rgba(255,235,210,0.6)',
+    bubble: 'rgba(40,24,10,0.92)',
+    bubbleBorder: '#ffb547',
+  },
+};
+
+// The twin stars, number stones and chart (Level 10). Crystals reuse PIECE_STYLES.
+export const RACE_STYLE = {
+  leibniz: '#7fb8ff',                  // the Leibniz star's line, label and glow
+  leibnizCore: '#eef5ff',
+  leibnizGlow: 'rgba(127,184,255,0.9)',
+  nila: '#ffb547',                     // the Nilakantha star's line, label and glow
+  nilaCore: '#fffbe6',
+  nilaGlow: 'rgba(255,181,71,0.9)',
+  rim: 'rgba(255,235,210,0.5)',
+  stone: '#8a7a6a',                    // a number stone
+  stoneLight: '#d8c8b0',
+  stoneDark: '#4a3e34',
+  stoneText: '#1a1008',
+  num: '#e0a83a',                      // the fixed 4 on top of every Nilakantha fraction
+  numLight: '#fff1c4',
+  numDark: '#8a5a10',
+  stoneUsed: 'rgba(138,122,106,0.25)', // a stone already used this term
+  rackFill: 'rgba(30,18,8,0.85)',
+  rackEdge: 'rgba(255,181,71,0.6)',
+  slot: 'rgba(255,235,210,0.35)',      // an empty slot in 4 ÷ (□ × □ × □)
+  pressFill: 'rgba(40,26,14,0.9)',     // the crystal press
+  pressEdge: 'rgba(255,209,102,0.85)',
+  disc: 'rgba(255,255,255,0.06)',      // the slice display
+  discEdge: 'rgba(255,235,210,0.4)',
+  label: '#ffd166',
 };
 
 // The number portal, meeting ring and pens (Level 9).

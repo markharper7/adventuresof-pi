@@ -31,6 +31,7 @@ export const CHARACTERS = {
   seven: { name: '7', sprite: 'seven' },
   eight: { name: '8', sprite: 'eight' },
   nine: { name: '9', sprite: 'nine' },
+  ten: { name: '10', sprite: 'ten' },
 };
 
 export const DIALOGUE = {
@@ -752,5 +753,73 @@ export const DIALOGUE = {
 
     // Talking to 9 after the warp gate is open.
     again: [{ nine: ['About 61 out of every 100 pairs become friends. Press R to empty the pens and start counting again.'] }],
+  },
+
+  // =========================================================================
+  // LEVEL 10 — The Star Race (Nilakantha series against Leibniz)
+  // PLACEHOLDER dialogue — npc_dialogue.md has no Level 10 section yet.
+  // =========================================================================
+  level10: {
+    // First time π talks to 10.
+    intro: [
+      {
+        ten: [
+          "Pi! I'm 10. One and zero, side by side. Welcome to the Star Race!",
+          'Remember the Leibniz series from the Star Forge? 4 − 4/3 + 4/5 − 4/7 + … It does get to you, but it takes its time.',
+          '2 has come along to feed the left-hand star with the Leibniz series, just like before.',
+          'The right-hand star is yours. Six hundred years ago, an Indian mathematician called Nilakantha found a much faster series.',
+          'π = 3 + 4/(2×3×4) − 4/(4×5×6) + 4/(6×7×8) − … Notice that it starts at 3, so your star is already burning at 3!',
+          'Each term is 4 divided by three numbers in a row. Look at the pattern at the top of the screen to work out which three come next.',
+          'Fetch those number stones from the rack at the bottom and put them in one of my two crystal presses.',
+          'The fire press makes fire crystals, which add to your star. The ice press makes ice crystals, which take away. Look at the + and − signs in the pattern to choose the right one.',
+          'Pick up the finished crystal and carry it to your star. Watch your star change as it goes in!',
+          'Every time you add a term, 2 adds one to the Leibniz star. Same number of terms each. Let us see which star settles down first!',
+        ],
+      },
+    ],
+
+    // Talking to 2 during the race.
+    twoRacing: [{ two: ['I add a Leibniz term every time you add a Nilakantha term. Look at the chart along the top. My star is still wobbling!'] }],
+
+    // Talking to 10 during the race (before the warp gate opens). {n} = terms still needed.
+    progress: [{ ten: ['{n} more terms to power up the warp gate. Look at the pattern: which three numbers come next?'] }],
+
+    // Said automatically when enough terms are done to open the warp gate. {nila}, {leibniz}, {terms}.
+    unlocked: [
+      {
+        ten: [
+          'Look at the two stars! After {terms} terms each, Nilakantha says {nila} and Leibniz says {leibniz}.',
+          'Your star has hardly moved for the last few terms. Leibniz is still jumping about.',
+          'The warp gate is open. Keep going if you want, there are a few more stones on the rack.',
+        ],
+      },
+    ],
+
+    // Said automatically after the last term. {nila}, {leibniz}, {terms}.
+    allDone: [
+      {
+        ten: [
+          'That is every stone on the rack! Nilakantha: {nila}. Leibniz: {leibniz}.',
+          'Why is Nilakantha so much faster? Look at how quickly its slices shrink compared with 4/3, 4/5, 4/7…',
+          'Go and ask 2 to keep feeding the Leibniz star. How many terms does it need to catch up?',
+        ],
+      },
+    ],
+
+    // Talking to 2 after the race, before the fast-forward.
+    twoOffer: [{ two: ['Shall I keep feeding the Leibniz star? I have got a thousand more crystals here. Stand back!'] }],
+
+    // After 2 feeds 1000 more terms. {terms}, {value}, {nila}, {nilaTerms}.
+    twoAfter: [
+      {
+        two: [
+          '{terms} Leibniz terms, and my star says {value}.',
+          'Your Nilakantha star said {nila} after only {nilaTerms} terms. Which do you think is closer?',
+        ],
+      },
+    ],
+
+    // Talking to 10 after the warp gate is open.
+    again: [{ ten: ['Press R to put both stars back to the start and race again.'] }],
   },
 };

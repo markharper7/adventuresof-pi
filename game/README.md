@@ -144,6 +144,21 @@ debug menu's demo statistics are the only exception.
    π ≈ √(6 × pairs ÷ friends) at any time and adds it to the tracker. A calculation with ≥ **100** pairs opens
    the warp gate, and 9 links 6/π² back to the Basel sum from Level 5. R empties the pens.
 
+10. **The Star Race** (Nilakantha series) — **10** explains π = 3 + 4/(2×3×4) − 4/(4×5×6) + … Two stars
+   race side by side: **2** (from Level 2) feeds the left star the Leibniz series, the player feeds the right
+   star the Nilakantha series, one term each at a time (Leibniz starts at 4, Nilakantha already burns at 3).
+   For each fraction the player works out the three numbers from the pattern, takes those stones from the
+   rack of number stones (2–18, Enter from the square above; Enter again puts one back) and puts them in the
+   right **crystal press**: the fire press for a fraction that is added, the ice press for one that is taken away
+   (the other press is dimmed and refuses them with a hint). Each press shows the whole fraction (4 over
+   □ × □ × □, filling in as stones go in); stones that aren't in the term are spat out with a hint. The press builds
+   the fire (+) or ice (−) crystal (4 ÷ (a × b × c) = 1/den). The player carries the finished crystal to the
+   Nilakantha star, so every time something goes in, the star's value changes, and 2 throws the next Leibniz
+   term in. A chart along the top shows both stars after each
+   term and a disc shows how thin the last slice was (1/6, 1/30, 1/84 …). Each Nilakantha value goes to the
+   tracker. **4** fractions open the warp gate; there are **8** in all. Afterwards 2 can feed the Leibniz star
+   1000 more terms, and it still isn't as close. R restarts the race.
+
 ## Debug
 
 - ` or F9 opens the debug menu: jump to any level / stage / Level 0 step / Level 2
@@ -151,7 +166,7 @@ debug menu's demo statistics are the only exception.
   missions, force the warp gate open, view or reset save data.
 - URL jumps (level = level number): `index.html?level=0&step=meet`,
   `index.html?level=1&stage=3`, `index.html?level=2&part=5`, `index.html?level=3`.
-  Levels 3–9 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried,
+  Levels 3–10 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried,
   Level 6 orbits already surveyed, Level 7 fractions already fired).
 - Progress, tracker, learned controls and debug settings are saved in the
   browser's localStorage ("Reset save data" in the debug menu starts over).
@@ -202,6 +217,7 @@ src/
     level7-wallis.js
     level8-buffon.js
     level9-coprime.js
+    level10-race.js
 ```
 
 ## Map boundaries
