@@ -28,6 +28,7 @@ export const CHARACTERS = {
   four: { name: '4', sprite: 'four' },
   five: { name: '5', sprite: 'five' },
   six: { name: '6', sprite: 'six' },
+  seven: { name: '7', sprite: 'seven' },
 };
 
 export const DIALOGUE = {
@@ -571,5 +572,63 @@ export const DIALOGUE = {
 
     // Talking to 6 after the warp gate is open.
     again: [{ six: ['Bigger circles, better estimates. But even huge ones still wobble a little. Try the telescope and see!'] }],
+  },
+
+  // =========================================================================
+  // LEVEL 7 — The Fraction Yard (Wallis product)
+  // PLACEHOLDER dialogue — npc_dialogue.md has no Level 7 section yet.
+  // =========================================================================
+  level7: {
+    // First time π talks to 7. Docked at the bottom so the series along the top stays visible.
+    intro: [
+      {
+        seven: [
+          "Pi! I'm 7. Welcome to the Fraction Yard.",
+          'See the asteroid drifting up there? It is a fraction: one rock on top, one rock underneath, joined by the fraction bar.',
+          'Right now it is 1 over 1, which is just 1.',
+          'A mathematician called John Wallis found something amazing. Multiply these fractions together, one after another, and you get closer and closer to π ÷ 2.',
+          'The fractions are along the top of the screen: 2/1 × 2/3 × 4/3 × 4/5 × 6/5 … Look carefully. Can you see the pattern?',
+          'To multiply, use my turret. Take a number from the ammo rack at the bottom and load it into the turret.',
+          'Press Enter next to the turret to climb in. Up aims at the top rock, down at the bottom rock, and left and right slide the turret along its rail.',
+          'Press Enter to fire, and Esc to climb back out.',
+          'The fraction never stops moving, so fire a little before it is overhead!',
+          'Multiply the top rock by every top number in the pattern, and the bottom rock by every bottom number.',
+          'You can do them in any order you like. When you multiply, the order makes no difference to the answer.',
+          'Whenever you want to know what the fraction is worth, use the scanner. Finish all ten fractions and the warp gate will power up.',
+        ],
+      },
+    ],
+
+    // Talking to 7 while there are numbers still to fire. {left}.
+    progress: [{ seven: ['{left} numbers still to fire. Look at the pattern along the top: the dark numbers are the ones still to do.'] }],
+
+    // Talking to 7 once every number has been fired.
+    readyToScan: [{ seven: ['Every fraction in the pattern is done! Take a reading at the scanner.'] }],
+
+    // After the first scan, if not everything is finished yet. {value}, {left}.
+    firstScan: [
+      {
+        seven: [
+          '{value}. Not bad for a start!',
+          'Finish another fraction and scan again. Which way does the estimate move each time?',
+        ],
+      },
+    ],
+
+    // The first time a scan uses all ten fractions (opens the warp gate). {value}.
+    allDone: [
+      {
+        seven: [
+          '{value} from all ten fractions!',
+          'Did you notice? It does not creep up on π. It hops over it, then under it, then over it again.',
+          'After 9 fractions you get about 3.30, a bit too big. After 10 you get about 3.00, a bit too small. π is trapped in between!',
+          'And the hops get smaller every time, so the more fractions you multiply, the tighter the trap.',
+          'The warp gate is open. Press R if you want to build the fraction again.',
+        ],
+      },
+    ],
+
+    // Talking to 7 after the warp gate is open.
+    again: [{ seven: ['Press R to clear the fraction back to 1 over 1. Try scanning after every fraction, and watch it zig-zag round π.'] }],
   },
 };

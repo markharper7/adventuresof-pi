@@ -24,6 +24,7 @@ import * as ui from '../core/ui.js';
 import { tracker, markStageDone } from '../core/state.js';
 import { play, DIALOGUE, CHARACTERS } from '../core/talk.js';
 import { fmt, key, clamp, cheb, fracHtml, mulberry32 } from '../core/utils.js';
+import { drawRock } from '../core/rock.js';
 import { BASEL_STYLE as BS } from '../../assets/theme.js';
 
 const ID = 'basel';
@@ -65,12 +66,6 @@ const inPile = (x, y) => x >= PILE.x0 && x <= PILE.x1 && y >= PILE.y0 && y <= PI
 const nextToPile = (p) => p.x >= PILE.x0 - 1 && p.x <= PILE.x1 + 1 && p.y >= PILE.y0 - 1 && p.y <= PILE.y1 + 1;
 const LASERS = { dup: { name: 'the duplicator', short: '×6', color: () => BS.dup }, root: { name: 'the square-root laser', short: '√', color: () => BS.root } };
 
-// a lumpy rock outline, made once
-const SHAPE = (() => {
-  const rng = mulberry32(55);
-  return Array.from({ length: 11 }, () => 0.82 + rng() * 0.18);
-})();
-
 function createStage(game, si, opts = {}) {
   const preload = clamp(opts.preload || 0, 0, MAX_TERMS);
   const st = {
@@ -89,13 +84,13 @@ function createStage(game, si, opts = {}) {
     onScale: null,           // { w, n, sum }
     scaleShown: 0,           // the dial needle eases towards onScale.w
     aim: 0,                  // degrees, + = up
+    manned: false,           // is π in the gun? (then ↑ ↓ aim and Esc gets out)
     fx: [],                  // { color, x, y, start }
     calcs: [],               // { n, pi }
     unlocked: false,
   };
   if (opts.duplicated && st.n) st.duplicated = true;
   const p = () => game.player;
-  const onPlatform = () => p().x === PLATFORM.x && p().y === PLATFORM.y;
   const isOut = (kind) => [st.carry, st.loaded, st.shot].some((c) => c && c.kind === kind);
   const nextK = () => st.n + 1;
   const mass = () => (st.duplicated ? 6 * st.sum : st.sum);
@@ -129,14 +124,19 @@ function createStage(game, si, opts = {}) {
   }
 
   // ------------------------------------------------------------ actions (Enter)
-  function interceptMove(dx, dy) {
-    if (!dy || !onPlatform()) return false;
-    if (!st.briefed) {
-      ui.toast(`Talk to ${FIVE.name} before touching the gun.`);
-      return true;
-    }
-    st.aim = clamp(st.aim - dy * AIM_STEP, -AIM_MAX, AIM_MAX);
+  function interceptMove(dx, dy, repeat) {
+    if (!st.manned) return false;
+    if (dy) st.aim = clamp(st.aim - dy * AIM_STEP, -AIM_MAX, AIM_MAX);
+    else if (!repeat) ui.toast(`You're in the gun. Press ${key('Esc')} to get out.`);
     return true;
+  }
+
+  function onKey(e) {
+    if (st.manned && (e.code === 'Escape' || e.code === 'Backspace')) {
+      e.preventDefault();
+      st.manned = false;
+      game.refreshHud();
+    }
   }
 
   const handsFull = () => ui.toast('Your hands are full.');
@@ -144,9 +144,20 @@ function createStage(game, si, opts = {}) {
 
   async function onAction() {
     const me = p();
-    // the gun
-    if (onPlatform()) {
+    // the gun: Enter on or next to its platform gets in
+    if (st.manned || cheb(PLATFORM, me) <= 1) {
       if (!st.briefed) return ui.toast(`Talk to ${FIVE.name} before touching the gun.`), true;
+      if (!st.manned) {
+        if (st.carry && st.carry.kind === 'rock') return ui.toast('Take the rock to the scale at the top.'), true;
+        st.manned = true;
+        game.slidePlayer(PLATFORM.x, PLATFORM.y);
+        const loadNow = st.carry && !st.loaded && !st.shot;
+        if (!loadNow) {
+          ui.toast(`You're in the gun. ${key('↑')} ${key('↓')} aim, ${key('Enter')} fires, ${key('Esc')} gets out.`, 3500);
+          game.refreshHud();
+          return true;
+        }
+      }
       if (st.loaded && !st.shot) {
         if (st.loaded.kind !== 'chunk' && !st.n) return ui.toast('There is no asteroid to fire at.'), true;
         const now = performance.now();
@@ -159,7 +170,7 @@ function createStage(game, si, opts = {}) {
         if (st.loaded || st.shot) return ui.toast('Wait for the last shot to land.'), true;
         st.loaded = st.carry;
         st.carry = null;
-        ui.toast(`Loaded ${itemLabel(st.loaded)}. Aim with ${key('↑')} ${key('↓')} and press ${key('Enter')} to fire.`, 3200);
+        ui.toast(`Loaded ${itemLabel(st.loaded)}. Aim with ${key('↑')} ${key('↓')}, press ${key('Enter')} to fire, ${key('Esc')} to get out.`, 3500);
         game.refreshHud();
         return true;
       }
@@ -381,7 +392,7 @@ function createStage(game, si, opts = {}) {
       cancelValue: false,
     });
     if (!ok) return;
-    Object.assign(st, { n: 0, sum: 0, duplicated: false, carry: null, loaded: null, shot: null, dupAnim: null, rootAnim: null, rock: null, onScale: null });
+    Object.assign(st, { n: 0, sum: 0, duplicated: false, carry: null, loaded: null, shot: null, dupAnim: null, rootAnim: null, rock: null, onScale: null, manned: false });
     game.refreshHud();
     ui.toast('Everything is cleared. Fetch the 1-megatonne rock and fire it into orbit.');
   }
@@ -421,25 +432,7 @@ function createStage(game, si, opts = {}) {
   }
 
   // ------------------------------------------------------------ drawing
-  function rock(ctx, px, py, radius, rot, colors = [BS.rockLight, BS.rock, BS.rockDark]) {
-    radius = Math.max(1.5, radius);
-    ctx.save();
-    ctx.translate(px, py);
-    ctx.rotate(rot);
-    ctx.beginPath();
-    SHAPE.forEach((s, i) => {
-      const a = (i / SHAPE.length) * Math.PI * 2;
-      ctx[i ? 'lineTo' : 'moveTo'](Math.cos(a) * radius * s, Math.sin(a) * radius * s);
-    });
-    ctx.closePath();
-    const g = ctx.createRadialGradient(-radius * 0.3, -radius * 0.3, radius * 0.1, 0, 0, radius);
-    g.addColorStop(0, colors[0]);
-    g.addColorStop(0.6, colors[1]);
-    g.addColorStop(1, colors[2]);
-    ctx.fillStyle = g;
-    ctx.fill();
-    ctx.restore();
-  }
+  const rock = (ctx, px, py, radius, rot, colors = [BS.rockLight, BS.rock, BS.rockDark]) => drawRock(ctx, px, py, radius, rot, colors);
   const FINAL = () => [BS.finalLight, BS.final, BS.rockDark];
 
   /** A laser cell: a glowing capsule with its symbol. */
@@ -529,7 +522,7 @@ function createStage(game, si, opts = {}) {
     ctx.strokeStyle = BS.platform;
     ctx.lineWidth = 2;
     ctx.strokeRect(r.gx(PLATFORM.x + 0.08), r.gy(PLATFORM.y + 0.08), T * 0.84, T * 0.84);
-    if (onPlatform() && st.briefed) {
+    if (st.manned) {
       ctx.strokeStyle = BS.aim;
       ctx.lineWidth = 1.5;
       ctx.setLineDash([T * 0.12, T * 0.14]);
@@ -697,7 +690,8 @@ function createStage(game, si, opts = {}) {
     if (game.busy || ui.isOpen() || game.nearbyNpc() || !st.briefed) return;
     const me = p();
     let hint = null;
-    if (onPlatform()) hint = st.loaded && !st.shot ? '↑↓ aim · Enter: fire' : st.carry && st.carry.kind !== 'rock' && !st.shot ? 'Enter: load' : null;
+    if (st.manned) hint = st.loaded && !st.shot ? '↑↓ aim · Enter: fire · Esc: get out' : st.carry && st.carry.kind !== 'rock' && !st.shot ? 'Enter: load · Esc: get out' : 'Esc: get out';
+    else if (cheb(PLATFORM, me) <= 1 && !(st.carry && st.carry.kind === 'rock')) hint = st.carry && !st.loaded && !st.shot ? 'Enter: get in and load' : 'Enter: get in the gun';
     else if (nextToPile(me) && !st.carry && pileOpen()) hint = `Enter: take 1/${nextK() ** 2}`;
     else if (cheb(DUP, me) <= 1 && !st.carry && st.n && !st.duplicated && !isOut('dup')) hint = 'Enter: take duplicator';
     else if (cheb(ROOT, me) <= 1 && !st.carry && st.duplicated && !isOut('root')) hint = 'Enter: take square-root laser';
@@ -715,7 +709,7 @@ function createStage(game, si, opts = {}) {
     npcs: [{ id: 'five', name: FIVE.name, sprite: FIVE.sprite, x: NPC_POS.x, y: NPC_POS.y, talk }],
     gate: { ...GATE, isOpen: () => st.unlocked, lockedText: `Weigh a rock built from all ${UNLOCK} terms to power up the warp gate.` },
     help: `<p>Take the next chunk from the stockpile with ${key('Enter')} (1, then 1/4, 1/9, 1/16… megatonnes, all drawn to scale) and carry it to the gun.
-      On the gun platform ${key('Enter')} loads it, ${key('↑')} ${key('↓')} aim and ${key('Enter')} fires. Step off with ${key('←')} ${key('→')}.</p>
+      ${key('Enter')} on or next to the gun platform gets you in the gun (and loads what you're carrying). In the gun ${key('↑')} ${key('↓')} aim, ${key('Enter')} fires and ${key('Esc')} gets you out.</p>
       <p>The first rock goes into orbit if it just skims the edge of the dotted orbit line. Aim straight at the planet and it crashes; too wide and it misses. Every later chunk has to hit it. If you miss, fetch another of the same chunk.</p>
       <p>Then fire the duplicator (×6) at it, and after that the square-root laser (√). Carry the rock that's left to the scale at the top: its weight is your estimate of π.</p>
       <p>${key('R')} clears everything and starts again.</p>`,
@@ -728,6 +722,7 @@ function createStage(game, si, opts = {}) {
       (x === SCALE.x && y === SCALE.y) ||
       Math.hypot(x + 0.5 - PLANET.x, y + 0.5 - PLANET.y) < PLANET.r + 0.2,
     interceptMove,
+    onKey,
     onAction,
     tick,
     onRestart,

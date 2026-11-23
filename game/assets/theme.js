@@ -20,6 +20,7 @@ export const SPRITES = {
   four: 'assets/sprites/npc-four.svg',
   five: 'assets/sprites/npc-five.svg',
   six: 'assets/sprites/npc-six.svg',
+  seven: 'assets/sprites/npc-seven.svg',
   gate: 'assets/sprites/warp-gate.svg',
   pad: 'assets/sprites/launch-pad.svg',
   planetMoon: 'assets/sprites/planet-moon.svg',
@@ -220,6 +221,31 @@ export const LEVEL_STYLES = {
     bubble: 'rgba(20,20,56,0.92)',
     bubbleBorder: '#ffd166',
   },
+  // Level 7 — a teal fraction yard where a two-rock fraction drifts past the multiplication turret
+  wallis: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    boundary: { kind: 'ring', radius: 3.5, colors: ['#5ce1e6', '#d6fbff', '#7cf5c8'], glow: 'rgba(92,225,230,0.5)', dashed: true },
+    border: 'rgba(92,225,230,0.5)',
+    bgTop: '#03100f',
+    bgBottom: '#0a2629',
+    nebulae: [
+      { x: 0.5, y: 0.2, r: 0.5, color: 'rgba(92,225,230,0.12)' },
+      { x: 0.9, y: 0.85, r: 0.4, color: 'rgba(124,245,200,0.12)' },
+    ],
+    stars: 210,
+    starColors: ['#ffffff', '#d6fbff', '#e0ffe9'],
+    board: 'rgba(8,40,44,0.30)',
+    tileA: 'rgba(255,255,255,0.025)',
+    tileB: null,
+    grid: 'rgba(140,240,240,0.11)',
+    gridDot: null,
+    accent: '#5ce1e6',
+    accentGlow: 'rgba(92,225,230,0.85)',
+    text: '#eafffd',
+    muted: 'rgba(214,251,255,0.6)',
+    bubble: 'rgba(8,36,40,0.92)',
+    bubbleBorder: '#5ce1e6',
+  },
 };
 
 // Asteroids and the force field (Level 3).
@@ -290,6 +316,42 @@ export const LATTICE_STYLE = {
   lensEdge: 'rgba(255,209,102,0.8)',
   latticeDim: 'rgba(170,180,230,0.28)',
   sweep: 'rgba(255,209,102,0.25)',
+};
+
+// The fraction yard (Level 7).
+export const WALLIS_STYLE = {
+  rock: '#7a8a8c',
+  rockLight: '#c4d6d6',
+  rockDark: '#33403f',
+  bar: '#5ce1e6',                      // the fraction bar joining the two rocks
+  barGlow: 'rgba(92,225,230,0.8)',
+  tether: 'rgba(214,251,255,0.35)',
+  pill: 'rgba(4,22,26,0.88)',          // behind the rocks' numbers
+  pillEdge: 'rgba(92,225,230,0.6)',
+  number: '#ffffff',
+  charge: '#7cf5c8',                   // a number charge: rack, carried, loaded, bolt
+  chargeGlow: 'rgba(124,245,200,0.85)',
+  chargeText: '#062421',
+  trail: 'rgba(124,245,200,0.75)',
+  hit: '#ffd166',
+  bounce: 'rgba(255,120,120,0.95)',
+  pop: '#ffd166',                      // the "×4" that floats up after a hit
+  zoom: 'rgba(214,251,255,0.75)',      // the zoom label by the fraction bar
+  turret: '#d7e6ef',
+  turretBase: '#2f4a55',
+  platform: 'rgba(92,225,230,0.8)',
+  rail: 'rgba(214,251,255,0.35)',      // the turret's rail
+  aim: 'rgba(255,230,160,0.8)',
+  rackFill: 'rgba(6,30,34,0.85)',
+  rackEdge: 'rgba(92,225,230,0.7)',
+  scanner: '#1d3b44',
+  scannerScreen: '#5ce1e6',
+  stripBg: 'rgba(3,16,18,0.82)',       // the series along the top
+  stripEdge: 'rgba(92,225,230,0.45)',
+  stripDone: '#ffffff',
+  stripTodo: 'rgba(214,251,255,0.28)',
+  stripFlash: '#ffd166',
+  label: '#ffd166',
 };
 
 // The polygon projector (Level 4).

@@ -14,5 +14,6 @@ import level3 from './level3-asteroids.js';
 import level4 from './level4-polygons.js';
 import level5 from './level5-basel.js';
 import level6 from './level6-lattice.js';
+import level7 from './level7-wallis.js';
 
-export const LEVELS = [level0, level1, level2, level3, level4, level5, level6];
+export const LEVELS = [level0, level1, level2, level3, level4, level5, level6, level7];

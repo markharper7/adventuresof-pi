@@ -376,6 +376,18 @@ export class Game {
     this.refreshHud();
   }
 
+  /** Glide π straight to square (x, y), ignoring walls: for levels that move π themselves (e.g. into a turret). */
+  slidePlayer(x, y) {
+    const p = this.player, now = performance.now();
+    if (x !== p.x) p.facing = x > p.x ? 1 : -1;
+    p.fromX = p.x;
+    p.fromY = p.y;
+    p.x = x;
+    p.y = y;
+    p.moveStart = now;
+    this.lastMoveAt = now;
+  }
+
   nearbyNpc() {
     if (!this.stage) return null;
     return this.stage.npcs.find((n) => cheb(n, this.player) <= 1) || null;

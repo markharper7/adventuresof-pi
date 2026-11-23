@@ -93,7 +93,8 @@ debug menu's demo statistics are the only exception.
 5. **The Asteroid Quarry** (Basel problem) — **5** explains 1 + 1/4 + 1/9 + … = π²/6, so
    π = √(6 × sum). Everything is to scale (rock area ∝ mass). Take the next chunk (1, 1/4,
    1/9 … megatonnes, **10** in all, always all on show) from the stockpile at the bottom, carry it to the gun
-   platform, Enter loads, ↑/↓ aim, Enter fires. The first rock is fired into orbit round a
+   and press Enter next to it to get in and load it. In the gun ↑/↓ aim, Enter fires, Esc gets out
+   (Esc leaves every turret / telescope). The first rock is fired into orbit round a
    planet, skimming the orbit (too steep crashes, too wide misses); later chunks must hit it.
    A miss is lost: fetch another of the same chunk. Then the **duplicator** laser (×6: six
    copies crash back into one rock) and the **square-root** laser (debris flies off, one rock
@@ -112,6 +113,18 @@ debug menu's demo statistics are the only exception.
    open the warp gate and the **telescope**: ↑/↓ radius ±1, ←/→ ±5 (1 to 50), a radar sweep fills
    the lattice, Enter notes count ÷ r² down to the tracker, Esc leaves. R next to an orbit clears its
    beacons; elsewhere it replays the demonstration.
+7. **The Fraction Yard** (Wallis product) — **7** explains π ÷ 2 = 2/1 × 2/3 × 4/3 × 4/5 × … (docked,
+   so the series is visible). The first **10** fractions are shown along the top of the screen and
+   light up as they are done. A fraction asteroid (a top rock and a bottom rock joined by the fraction
+   bar, each labelled with its number, starting at 1 / 1) patrols left and right. A rock's volume is
+   its number, so it grows with each hit; when the rocks get too big the view zooms out ×10 (shown by the bar). Take a number (1–11)
+   from the ammo rack and press Enter next to the turret to get in and load it (it stays loaded until
+   swapped). In the turret ↑/↓ target the top or bottom rock, ←/→ slide it along its rail, Enter fires
+   straight up (lead the moving target), Esc gets out. A hit multiplies that rock and fills a
+   matching empty slot, in any order; an unneeded number bounces off with a hint. The **scanner** works
+   whenever top and bottom have the same count of numbers: it shows top ÷ bottom ≈ π/2 and the player
+   doubles it (added to the tracker). In order the estimates hop above and below π (9 fractions 3.30,
+   10 fractions 3.00). A scan with all 10 opens the warp gate. R clears the fraction to 1 / 1.
 
 ## Debug
 
@@ -120,8 +133,8 @@ debug menu's demo statistics are the only exception.
   missions, force the warp gate open, view or reset save data.
 - URL jumps (level = level number): `index.html?level=0&step=meet`,
   `index.html?level=1&stage=3`, `index.html?level=2&part=5`, `index.html?level=3`.
-  Levels 3–6 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried,
-  Level 6 orbits already surveyed).
+  Levels 3–7 have extra debug-menu jumps (e.g. 1000 asteroids already thrown, 12 sides tried,
+  Level 6 orbits already surveyed, Level 7 fractions already fired).
 - Progress, tracker, learned controls and debug settings are saved in the
   browser's localStorage ("Reset save data" in the debug menu starts over).
 - Settings: `game.config.js`.
@@ -156,6 +169,7 @@ src/
     debug.js          debug menu + demo sessions
     talk.js           plays interactions from npc_dialogue.js
     fractions.js      reusable fraction-wedge delivery mechanic
+    rock.js           lumpy asteroid drawing (Levels 5 and 7)
     boundary.js       shaped, themed map edge (rounded corners; nebula / ring / asteroids)
     utils.js
   levels/
@@ -167,6 +181,7 @@ src/
     level4-polygons.js
     level5-basel.js
     level6-lattice.js
+    level7-wallis.js
 ```
 
 ## Map boundaries
