@@ -14,7 +14,6 @@
 
 ## Monte Carlo / probabilistic
 9. Random point sampling in a square containing a quarter circle — ratio of points inside the circle estimates π/4.
-10. 
 10. Buffon's needle problem — dropping needles on lined paper, using the probability of crossing a line.
 
 ## Continued fractions / products
@@ -31,3 +30,7 @@
 ## Physical / experimental
 16. Pendulum period experiments combined with g to back out π.
 17. Spectral methods — e.g., counting lattice points in a circle (Gauss circle problem) to approximate π.
+
+## Other
+18. Coprime probability — the chance two random integers share no common factor is 6/π².
+19. Galperin's colliding blocks — with a mass ratio of 100^n, the number of elastic collisions gives the first n+1 digits of π.
