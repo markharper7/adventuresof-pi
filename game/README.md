@@ -159,7 +159,7 @@ debug menu's demo statistics are the only exception.
    tracker. **4** fractions open the warp gate; there are **8** in all. Afterwards 2 can feed the Leibniz star
    1000 more terms, and it still isn't as close. R restarts the race.
 
-11. **The Collision Course** (colliding blocks, the finale) — **11** explains the setup: a 1 tonne rock on a
+11. **The Collision Course** (colliding blocks) — **11** explains the setup: a 1 tonne rock on a
    frictionless track in front of an energy shield (a wall that everything bounces off perfectly), and perfectly bouncy rocks. Five pads hold asteroids
    of 1 t, 100 t, 10,000 t, 1,000,000 t and 100,000,000 t (each unlocks after the one before). Enter next to a pad
    picks that asteroid up; π carries it to the START mark on the track and Enter puts it down and sends it off; the little rock is squashed against the shield, again and again.
@@ -171,6 +171,16 @@ debug menu's demo statistics are the only exception.
    log), and "why?" is left as an open question. R watches the last run again.
    Once all five are done, an optional **custom** pad opens (it doesn't affect the gate) where the player types
    any mass from 1 t to 100,000,000 t: just the count, nothing goes to the tracker.
+
+12. **Counting in Twos** (colliding blocks in binary, the finale) — **12** explains binary (each place is worth twice
+   the one to its right) and runs the same setup as level 11, but the pads hold 4 t, 16 t, 64 t, 256 t and 1,024 t
+   (4ᵏ), so the counts are π's binary digits: 110, 1100, 11001 … Four boxes along the top show the live count as an
+   ordinary number → the live count in binary → the same digits with the point put in (it drops into place after
+   the first two digits when the run is over) → that value as an ordinary decimal (count ÷ 2ᵏ, which goes to the tracker). The player counts the 4 t run
+   by hand (6, shown as 110); the 64 t run (11.001 = 3.125) opens the warp gate. Once all five are done an optional
+   custom pad opens, as in level 11 (any mass up to 100,000,000 t, nothing to the tracker); all four boxes fill in,
+   with the point after the first two binary digits (50 t → 22 → 10110 → 10.110 = 2.75).
+   Levels 11 and 12 share all their code (`src/levels/clink-common.js`); each level file is just a config (base, masses, NPC, counter style).
 
 ## Debug
 
@@ -232,6 +242,8 @@ src/
     level9-coprime.js
     level10-race.js
     level11-clink.js
+    level12-binary.js
+    clink-common.js   (shared by levels 11 and 12)
 ```
 
 ## Map boundaries

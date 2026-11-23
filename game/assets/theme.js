@@ -25,6 +25,7 @@ export const SPRITES = {
   nine: 'assets/sprites/npc-nine.svg',
   ten: 'assets/sprites/npc-ten.svg',
   eleven: 'assets/sprites/npc-eleven.svg',
+  twelve: 'assets/sprites/npc-twelve.svg',
   gate: 'assets/sprites/warp-gate.svg',
   pad: 'assets/sprites/launch-pad.svg',
   planetMoon: 'assets/sprites/planet-moon.svg',
@@ -351,6 +352,31 @@ export const LEVEL_STYLES = {
     bubble: 'rgba(24,16,60,0.92)',
     bubbleBorder: '#c49bff',
   },
+  // Level 12 — the same dock, in the green glow of a computer screen: everything is counted in binary
+  binary: {
+    // shaped edge of the map (see src/core/boundary.js): kind = nebula | ring | asteroids
+    boundary: { kind: 'ring', radius: 3.5, colors: ['#5ef2c8', '#e2fff4', '#9fd8ff'], glow: 'rgba(94,242,200,0.45)', dashed: true },
+    border: 'rgba(94,242,200,0.5)',
+    bgTop: '#03100e',
+    bgBottom: '#0b2420',
+    nebulae: [
+      { x: 0.15, y: 0.35, r: 0.4, color: 'rgba(60,220,170,0.13)' },
+      { x: 0.85, y: 0.7, r: 0.45, color: 'rgba(90,170,255,0.12)' },
+    ],
+    stars: 230,
+    starColors: ['#ffffff', '#e2fff4', '#d6e8ff'],
+    board: 'rgba(8,40,34,0.28)',
+    tileA: 'rgba(255,255,255,0.02)',
+    tileB: null,
+    grid: 'rgba(150,255,220,0.09)',
+    gridDot: null,
+    accent: '#5ef2c8',
+    accentGlow: 'rgba(94,242,200,0.85)',
+    text: '#eafff8',
+    muted: 'rgba(220,255,244,0.6)',
+    bubble: 'rgba(6,36,30,0.92)',
+    bubbleBorder: '#5ef2c8',
+  },
 };
 
 // The energy shield, the track, the asteroids and the collision counter (Level 11).
@@ -374,6 +400,19 @@ export const CLINK_STYLE = {
   pad: 'rgba(24,18,56,0.9)',
   padEdge: 'rgba(196,155,255,0.75)',
   padDone: '#7dffa8',
+  point: '#ffffff',                   // the point dropping into place (Level 12's middle box)
+};
+
+// Level 12: the same pieces in binary green.
+export const BINARY_CLINK_STYLE = {
+  ...CLINK_STYLE,
+  counterEdge: 'rgba(94,242,200,0.7)',
+  counter: '#5ef2c8',
+  hidden: 'rgba(226,255,244,0.45)',
+  pad: 'rgba(8,36,32,0.9)',
+  padEdge: 'rgba(94,242,200,0.75)',
+  padDone: '#d4fff0',
+  point: '#ffd166',
 };
 
 // The twin stars, number stones and chart (Level 10). Crystals reuse PIECE_STYLES.

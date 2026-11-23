@@ -33,6 +33,7 @@ export const CHARACTERS = {
   nine: { name: '9', sprite: 'nine' },
   ten: { name: '10', sprite: 'ten' },
   eleven: { name: '11', sprite: 'eleven' },
+  twelve: { name: '12', sprite: 'twelve' },
 };
 
 export const DIALOGUE = {
@@ -898,5 +899,83 @@ export const DIALOGUE = {
 
     // After the first run from the custom pad. {count} = collisions, {mass} = its mass.
     custom: [{ eleven: ['{mass}: {count} collisions. Is that you, Pi? Try some other masses and see.'] }],
+  },
+
+  // =========================================================================
+  // LEVEL 12 — Counting in Twos (placeholder dialogue)
+  // =========================================================================
+  // Placeholders after a run: {count} = collisions (ordinary number), {digits} = the count in binary,
+  // {pointed} = the binary digits with the point put in, {value} = that as an ordinary decimal, {mass} = its mass.
+  level12: {
+    // First time π talks to 12.
+    intro: [
+      {
+        twelve: [
+          "Pi! I'm 12. You found your digits in 11's collisions? Then you know the rocks, the shield and the counting.",
+          'Out here we count differently. We count in binary, like a computer.',
+          'Binary only has two digits, 0 and 1. In ordinary numbers each place is worth ten times the one to its right: ones, tens, hundreds.',
+          'In binary each place is worth twice the one to its right: ones, twos, fours, eights.',
+          'So 1 is one, 10 is two, 11 is three, 100 is four and 101 is five.',
+          'My asteroids are different too. The lightest weighs 4 tonnes, then 16, then 64. Four times heavier each time.',
+          'Start with the 4 tonne asteroid. Count the collisions yourself, then we will write your count in binary.',
+        ],
+      },
+    ],
+
+    // Talking to 12 between runs. {next} = the mass of the next asteroid to try.
+    progress: [{ twelve: ['Try the {next} asteroid next. Watch all four boxes at the top.'] }],
+
+    // After the first run of each asteroid.
+    after: [
+      // 4 t
+      [
+        {
+          twelve: [
+            '{count} collisions. In binary that is {digits}: one four, one two and no ones.',
+            'Look at the top. I have put a point in after the first two digits: {pointed}. Remember that.',
+            'Now the 16 tonne asteroid. Four times heavier. My counter will count in binary for you.',
+          ],
+        },
+      ],
+      // 16 t
+      [{ twelve: ['{digits}. Put the point in: {pointed}. Still three.', 'Next, the 64 tonne asteroid.'] }],
+      // 64 t (opens the warp gate)
+      [
+        {
+          twelve: [
+            '{digits}. Put the point in: {pointed}.',
+            'After the point, binary places are worth a half, then a quarter, then an eighth. So {pointed} is three and one eighth: {value}.',
+          ],
+        },
+        { pi: ['One one point zero zero one... that is me again! Written in ones and zeros.'] },
+        {
+          twelve: [
+            'Same rocks, same shield. Count in tens and you get 3.14. Count in twos and you get 11.001. Either way, it is you.',
+            'The warp gate is open. Or keep going: every asteroid four times heavier gives one more binary digit.',
+          ],
+        },
+      ],
+      // 256 t
+      [{ twelve: ['{digits}. One more binary digit: {pointed}.', 'The next one is 1,024 tonnes.'] }],
+      // 1,024 t
+      [
+        {
+          twelve: [
+            '{digits}, so {pointed}.',
+            'Binary digits are small steps. It takes about three of them to make one ordinary digit.',
+            'I have opened one more pad for you. On it you can build an asteroid of any mass you like. What does the binary counter say then?',
+          ],
+        },
+      ],
+    ],
+
+    // Talking to 12 after the warp gate is open.
+    again: [{ twelve: ['Press R to watch the last run again. Four times heavier, one more binary digit.'] }],
+
+    // Talking to 12 once all five are done and the custom pad is open.
+    extras: [{ twelve: ['Build an asteroid of any mass you like and count its collisions. Watch the binary counter.'] }],
+
+    // After the first run from the custom pad. The point goes after the first two binary digits, as for the others.
+    custom: [{ twelve: ['{mass}: {count} collisions, {digits} in binary. Put the point in after the first two digits: {pointed}. That is {value}.', 'Is that you, Pi? Try some other masses and see.'] }],
   },
 };
