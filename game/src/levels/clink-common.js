@@ -25,6 +25,8 @@
 // types any mass from 1 t up to 100,000,000 t. Just the count, nothing to the tracker. (With steps: true the
 // point and value boxes fill in too, with the point where π's point is in that base.)
 // With steps: true the top shows four boxes: the count → the count in the level's base → the point put in → the value.
+// With a dial (Level 12), a base dial switches on when the warp gate opens: the player picks any base in the list,
+// the pads change to that base's asteroids (base², base⁴ … tonnes) and each base keeps its own runs.
 import * as ui from '../core/ui.js';
 import { tracker, markStageDone } from '../core/state.js';
 import { play, CHARACTERS } from '../core/talk.js';
@@ -43,6 +45,7 @@ const NPC_POS = { x: 3, y: 13 };
 const PLAYER_START = { x: 5, y: 9 };
 const GATE = { x: 25, y: 13 };
 const EXTRA_PAD = { x: 14, y: 14 };            // the optional bottom pad
+const DIAL_POS = { x: 9, y: 14 };              // the base dial (only in levels with cfg.dial)
 const HAND = [0];                              // main pads whose collisions the player counts by hand (the first time)
 const UNLOCK = 2;                              // the main pad whose run opens the warp gate
 const POINT_MS = 700;                          // how long the point takes to drop into place (steps counter)
@@ -127,52 +130,69 @@ function clinkSound(kind) {
  *   id, number, title, stageTitle, method, style,   level registry fields (style: key into LEVEL_STYLES)
  *   colors,                                          CLINK_STYLE-like palette (assets/theme.js)
  *   npc, dialogue,                                   key into CHARACTERS, and that level's DIALOGUE block
- *   base,                                            the counting base (10 or 2 so far; any 2–10 works)
- *   ks,                                              five k values: the main pads hold base^(2k) tonne asteroids
+ *   base,                                            the counting base the level starts in (any 2–10)
+ *   ks,                                              five k values (or base => five k values): the main pads hold
+ *                                                    base^(2k) tonne asteroids
+ *   dial,                                            optional list of bases: a base dial, switched on when the warp
+ *                                                    gate opens, changes the counting base (each base keeps its own runs)
  *   steps,                                           true: four boxes at the top (count → in base → point in → value)
- *   formula, help,                                   HUD box and extra help text (HTML)
+ *   formula, help,                                   HUD box (HTML, or (base, rocks) => HTML) and extra help text
  *   debugJumps, simulateNote
  * }
  */
 export function makeClinkLevel(cfg) {
-  const { id: ID, base: B, colors: CS, dialogue: D } = cfg;
+  const { id: ID, colors: CS, dialogue: D } = cfg;
   const NPC = CHARACTERS[cfg.npc];
-  const ROCKS = cfg.ks.map((k, n) => {
-    const mass = B ** (2 * k);                   // tonnes; the little rock is 1 tonne
-    return { n, k, mass, label: massLabel(mass), w: widthOf(mass), pad: { x: 6 + 4 * n, y: 11 } };
-  });
+  const ksFor = typeof cfg.ks === 'function' ? cfg.ks : () => cfg.ks;
+  /** The five main pads in a base: base^(2k) tonne asteroids. */
+  const rocksFor = (b) =>
+    ksFor(b).map((k, n) => {
+      const mass = b ** (2 * k);                 // tonnes; the little rock is 1 tonne
+      return { n, k, mass, label: massLabel(mass), w: widthOf(mass), pad: { x: 6 + 4 * n, y: 11 } };
+    });
+  const ROCKS0 = rocksFor(cfg.base);             // the starting base's pads
   const MAX_MASS = 100_000_000;                  // the custom asteroid's cap (Level 11's heaviest asteroid)
   const EXTRA = { id: 'custom', pad: EXTRA_PAD };  // the optional bottom pad: any mass
-  const PADS = [...ROCKS, EXTRA];
-
-  // ---- numbers in the level's base
-  const BASE_NAME = B === 10 ? '' : B === 2 ? 'binary' : `base ${B}`;
-  const digits = (count) => count.toString(B);
-  /** The count with the point put back in, k places from the right: 25 → 11001 → "11.001". */
-  const pointed = (count, k) => {
-    const s = digits(count);
-    return k ? `${s.slice(0, s.length - k)}.${s.slice(s.length - k)}` : s;
-  };
-  /**
-   * How many digits go after the point. The fixed pads: k (the pad's mass is base^(2k)). A custom mass has no k of
-   * its own, so the point goes where π's point is in this base: after the first two digits in binary (π = 11.001…),
-   * after the first one from base 4 up (π = 3.…). 50 t → 22 = 10110 → 10.110 = 2.75.
-   */
-  const INT_DIGITS = (3).toString(B).length;
-  const pointK = (rock, count) => (rock.kind === 'custom' ? Math.max(0, digits(count).length - INT_DIGITS) : rock.k);
-  /** count ÷ base^k as an ordinary decimal (exact when the base is 2 or 10). */
-  const valueText = (count, k) => {
-    const v = count / B ** k;
-    if (B === 10) return fmt(v, k);
-    const places = B === 2 ? k : Math.ceil(k * Math.log10(B)) + 1;
-    return v.toFixed(Math.min(15, places)).replace(/\.?0+$/, '');
-  };
+  const DIAL = cfg.dial ? DIAL_POS : null;
 
   function createStage(game, si, opts = {}) {
+    // ---- numbers in the current base (the base dial can change it: see useBase)
+    let B, BASE_NAME, INT_DIGITS, ROCKS, PADS;
+    const digits = (count) => count.toString(B);
+    /** The count with the point put back in, k places from the right: 25 → 11001 → "11.001". */
+    const pointed = (count, k) => {
+      const s = digits(count);
+      return k ? `${s.slice(0, s.length - k)}.${s.slice(s.length - k)}` : s;
+    };
+    /**
+     * How many digits go after the point. The fixed pads: k (the pad's mass is base^(2k), so √mass = base^k and the
+     * count is π shifted k places). A custom mass has no k of its own, so the point goes where π's point is in this
+     * base: after the first two digits in binary and base 3 (π = 11.001…₂ = 10.010…₃), after the first one from
+     * base 4 up (π = 3.…). 50 t → 22 = 10110 → 10.110 = 2.75.
+     */
+    const pointK = (rock, count) => (rock.kind === 'custom' ? Math.max(0, digits(count).length - INT_DIGITS) : rock.k);
+    /**
+     * count ÷ base^k as an ordinary decimal. Exact for bases made of 2s and 5s (2, 4, 5, 8, 10): 1/2 needs one
+     * decimal place, 1/5 one, 1/8 three, so 1/base^k needs (places per digit) × k. Rounded for 3, 6, 7, 9.
+     */
+    const EXACT_PLACES = { 2: 1, 4: 2, 5: 1, 8: 3 };
+    const valueText = (count, k) => {
+      const v = count / B ** k;
+      if (B === 10) return fmt(v, k);
+      const places = EXACT_PLACES[B] ? EXACT_PLACES[B] * k : Math.ceil(k * Math.log10(B)) + 1;
+      return v.toFixed(Math.min(15, places)).replace(/\.?0+$/, '');
+    };
+
     const st = {
       briefed: !!opts.briefed || !!opts.results,
-      results: { ...(opts.results || {}) }, // n -> collisions (a run of main pad n has been done)
-      counted: { ...(opts.results ? { 0: true } : {}) }, // n -> the player has counted it by hand
+      base: cfg.base,      // the counting base right now
+      bases: {             // base -> { results: n -> collisions, counted: n -> counted by hand }: each base keeps its own runs
+        [cfg.base]: { results: { ...(opts.results || {}) }, counted: { ...(opts.results ? { 0: true } : {}) } },
+      },
+      results: null,       // the current base's results and counted (set by useBase)
+      counted: null,
+      extras: !!opts.results && ROCKS0.length - 1 in opts.results, // the custom pad is open (all five done in some base)
+      dialSeen: false,     // the player has turned the base dial before
       custom: [],          // custom pad: the latest runs, newest first: { label, count }
       lastCustom: '',      // custom pad: the mass last typed in, offered again next time
       run: null,           // { rock, sim, disp, start, shown, hand, finished, revealAt } (rock = the load that was pushed)
@@ -181,8 +201,25 @@ export function makeClinkLevel(cfg) {
       lastSound: 0,
       unlocked: opts.results ? UNLOCK in opts.results : false,
     };
+
+    /** Count in base b from now on: its numbers, its pads and its own runs so far. */
+    function useBase(b) {
+      B = b;
+      st.base = b;
+      BASE_NAME = b === 2 ? 'binary' : b === 10 && !cfg.steps ? '' : `base ${b}`;
+      INT_DIGITS = (3).toString(b).length;
+      ROCKS = rocksFor(b);
+      PADS = [...ROCKS, EXTRA];
+      // only the starting base's first asteroid is counted by hand
+      const own = (st.bases[b] ??= { results: {}, counted: b === cfg.base ? {} : { 0: true } });
+      st.results = own.results;
+      st.counted = own.counted;
+    }
+    useBase(cfg.base);
+    if (DIAL && opts.base) useBase(opts.base);
+
     if (st.unlocked) markStageDone(ID, si);
-    const extrasOpen = () => st.results[ROCKS.length - 1] !== undefined;
+    const extrasOpen = () => st.extras;
     const isUnlocked = (pad) => (pad === EXTRA ? extrasOpen() : pad.n === 0 || st.results[pad.n - 1] !== undefined);
     const lockedHint = (pad) => ROCKS[pad === EXTRA ? ROCKS.length - 1 : pad.n - 1].label;
     const nextRock = () => ROCKS.find((r) => st.results[r.n] === undefined) || null;
@@ -192,7 +229,7 @@ export function makeClinkLevel(cfg) {
     /** Placeholder values for dialogue lines after a run. */
     const vars = (rock, count) => {
       const k = pointK(rock, count);
-      return { count, mass: rock.label, digits: digits(count), pointed: pointed(count, k), value: valueText(count, k) };
+      return { count, mass: rock.label, digits: digits(count), pointed: pointed(count, k), value: valueText(count, k), inBase: BASE_NAME };
     };
 
     // ------------------------------------------------------------ conversation
@@ -250,6 +287,10 @@ export function makeClinkLevel(cfg) {
         launch(rock);
         return true;
       }
+      if (DIAL && cheb(DIAL, p) <= 1) {
+        await turnDial();
+        return true;
+      }
       const pad = padNear(p);
       if (!pad) return false;
       if (!st.briefed) return ui.toast(`Those asteroids belong to ${NPC.name}. Talk to them first.`), true;
@@ -273,9 +314,38 @@ export function makeClinkLevel(cfg) {
       return true;
     }
 
+    /** The base dial: pick the counting base. Each base has its own pads (base², base⁴ … tonnes) and its own runs. */
+    async function turnDial() {
+      if (!st.briefed) return ui.toast(`That dial belongs to ${NPC.name}. Talk to them first.`);
+      if (!st.unlocked) return ui.toast('The base dial is switched off. It comes on when the warp gate opens.');
+      if (playing()) return ui.toast('Wait for this run to finish.');
+      if (st.carrying) return ui.toast('Put the asteroid back on its pad first.');
+      const done = (b) => Object.keys(st.bases[b]?.results || {}).length;
+      const b = await ui.choice({
+        title: 'Base dial',
+        text: 'Which base should the collision counter count in?',
+        options: cfg.dial.map((base) => ({
+          label: `Base ${base}${base === 2 ? ' · binary' : base === 10 ? ' · ordinary numbers' : ''}`,
+          value: base,
+          hint: `${base === st.base ? 'now · ' : ''}${done(base)}/5 asteroids`,
+        })),
+        cancelValue: null,
+      });
+      if (b === null || b === undefined || b === st.base) return;
+      useBase(b);
+      st.run = null; // the boxes at the top start afresh in the new base
+      st.flashes = [];
+      ui.toast(`Counting in base ${b}. New asteroids on the pads: ${ROCKS.map((r) => r.label).join(', ')}.`, 4500);
+      game.refreshHud();
+      if (!st.dialSeen && D.dial) {
+        st.dialSeen = true;
+        await play(D.dial, { base: b, top: b - 1, step: b * b });
+      }
+    }
+
     function launch(rock, { hand } = {}) {
       const sim = simulate(rock.mass, rock.w);
-      hand = hand ?? (rock.kind === 'main' && HAND.includes(rock.n) && !st.counted[rock.n]);
+      hand = hand ?? (rock.kind === 'main' && st.base === cfg.base && HAND.includes(rock.n) && !st.counted[rock.n]);
       st.run = {
         rock,
         sim,
@@ -348,14 +418,15 @@ export function makeClinkLevel(cfg) {
       if (rock.kind === 'custom') return customDone(rock, count);
       const first = st.results[rock.n] === undefined;
       st.results[rock.n] = count;
+      if (rock.n === ROCKS.length - 1) st.extras = true;
       record(rock, count);
       if (!first) return;
-      if (rock.n === UNLOCK) {
+      if (rock.n === UNLOCK && !st.unlocked) {
         st.unlocked = true;
         markStageDone(ID, si);
         game.refreshHud();
       }
-      await play(D.after[rock.n], vars(rock, count));
+      if (st.base === cfg.base) await play(D.after[rock.n], vars(rock, count)); // the story lines are for the starting base
     }
 
     /** Add a run's value (collisions ÷ base^k) to the tracker and say so. */
@@ -418,10 +489,13 @@ export function makeClinkLevel(cfg) {
       const rows = ROCKS.filter((r) => st.results[r.n] !== undefined)
         .map((r) => runRow(r.label, st.results[r.n], r.k))
         .join('');
-      let results = rows ? `<h3>Your runs</h3><ol class="results">${rows}</ol>` : '';
+      let results = rows ? `<h3>Your runs${DIAL ? ` in ${BASE_NAME}` : ''}</h3><ol class="results">${rows}</ol>` : '';
       if (st.custom.length)
         results += `<h3>Any mass</h3><ul class="results">${st.custom.map((c) => `<li>${c.label} → <b>${c.count}</b> collisions${BASE_NAME ? ` → ${digits(c.count)} → ${pointed(c.count, pointK({ kind: 'custom' }, c.count))} = ${valueText(c.count, pointK({ kind: 'custom' }, c.count))}` : ''}</li>`).join('')}</ul>`;
-      return `<h3>Mission</h3>${mission}${now}<div class="formula small">${cfg.formula}</div>${results}`;
+      if (DIAL && st.unlocked && st.briefed && !st.carrying)
+        mission += `<p class="muted">The <b>base dial</b> is on: counting in <b>${BASE_NAME}</b>. Turn it to count in another base.</p>`;
+      const formula = typeof cfg.formula === 'function' ? cfg.formula(B, ROCKS) : cfg.formula;
+      return `<h3>Mission</h3>${mission}${now}<div class="formula small">${formula}</div>${results}`;
     }
 
     // ------------------------------------------------------------ drawing
@@ -626,7 +700,42 @@ export function makeClinkLevel(cfg) {
     }
 
     /** The line under a used pad: the count as an ordinary number, and in the level's base too: "25 collisions (11001)". */
-    const countNote = (count) => `${count} collisions${BASE_NAME ? ` (${digits(count)})` : ''}`;
+    const countNote = (count) => `${count} collisions${BASE_NAME && B !== 10 ? ` (${digits(count)})` : ''}`;
+
+    /** The base dial: a round console with a tick for each base and the current base in the middle. */
+    function drawDial(r, t) {
+      if (!DIAL) return;
+      const ctx = r.ctx, T = r.T, cx = r.gx(DIAL.x + 0.5), cy = r.gy(DIAL.y + 0.5), R = T * 0.62;
+      const on = st.briefed && st.unlocked, bases = cfg.dial;
+      const a0 = Math.PI * 0.75, a1 = Math.PI * 2.25; // a 270° sweep over the top, from bottom-left to bottom-right
+      const ang = (b) => a0 + ((b - bases[0]) / (bases[bases.length - 1] - bases[0])) * (a1 - a0);
+      ctx.save();
+      ctx.globalAlpha = on ? 1 : 0.4;
+      ctx.fillStyle = CS.counterBg;
+      ctx.strokeStyle = CS.counterEdge;
+      ctx.lineWidth = 2;
+      ctx.shadowColor = CS.counterEdge;
+      ctx.shadowBlur = on ? T * (0.18 + 0.1 * Math.sin(t / 450)) : 0;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.lineCap = 'round';
+      for (const b of bases) {
+        const a = ang(b), cur = b === st.base;
+        ctx.strokeStyle = cur ? CS.point : CS.counterEdge;
+        ctx.lineWidth = cur ? 3 : 1.2;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(a) * R * 0.72, cy + Math.sin(a) * R * 0.72);
+        ctx.lineTo(cx + Math.cos(a) * R * 0.92, cy + Math.sin(a) * R * 0.92);
+        ctx.stroke();
+      }
+      ctx.restore();
+      r.text(String(st.base), cx, cy + T * 0.03, { size: 0.42, color: on ? CS.counter : CS.hidden, weight: 800 });
+      r.text('BASE DIAL', cx, cy + T * 0.95, { size: 0.22, color: CS.label, weight: 700 });
+      if (!on) r.text('🔒', cx, cy - T * 0.85, { size: 0.26 });
+    }
 
     function drawPads(r, t) {
       const ctx = r.ctx, T = r.T;
@@ -694,6 +803,7 @@ export function makeClinkLevel(cfg) {
       drawStart(r, t);
       drawCounter(r);
       drawPads(r, t);
+      drawDial(r, t);
       drawRocks(r);
       drawFlashes(r);
     }
@@ -710,6 +820,8 @@ export function makeClinkLevel(cfg) {
         else if (padNear(p) === st.carrying.src) r.bubble(p.x, p.y - 1.1 - st.carrying.w, 'Enter: put it back');
         return;
       }
+      if (DIAL && cheb(DIAL, p) <= 1 && !playing())
+        return r.bubble(p.x, p.y - 1.1, st.unlocked ? `Enter: turn the base dial (now base ${st.base})` : 'Base dial: on when the warp gate opens');
       const pad = padNear(p);
       if (!pad || playing()) return;
       const what = pad === EXTRA ? 'Enter: build an asteroid of any mass' : `Enter: pick up the ${pad.label} asteroid`;
@@ -732,7 +844,8 @@ export function makeClinkLevel(cfg) {
       blocked: (x, y) =>
         (y >= 5 && y <= 7 && x >= 1 && x <= 26) ||   // the track
         (x >= 1 && x <= 2 && y >= 3 && y <= 8) ||    // the shield and its emitters
-        PADS.some((pd) => pd.pad.x === x && pd.pad.y === y),
+        PADS.some((pd) => pd.pad.x === x && pd.pad.y === y) ||
+        (!!DIAL && DIAL.x === x && DIAL.y === y),
       onAction,
       onEvent,
       tick,
@@ -755,8 +868,8 @@ export function makeClinkLevel(cfg) {
     debugJumps: cfg.debugJumps,
     // The physics is exact, so the only spread is how far a player goes (the gate run to the heaviest main pad).
     simulate: (si, rng) => {
-      const n = UNLOCK + Math.floor(rng() * (ROCKS.length - UNLOCK));
-      return simulate(ROCKS[n].mass, ROCKS[n].w).count / B ** ROCKS[n].k;
+      const n = UNLOCK + Math.floor(rng() * (ROCKS0.length - UNLOCK));
+      return simulate(ROCKS0[n].mass, ROCKS0[n].w).count / cfg.base ** ROCKS0[n].k;
     },
     simulateNote: cfg.simulateNote,
   };

@@ -952,6 +952,7 @@ export const DIALOGUE = {
           twelve: [
             'Same rocks, same shield. Count in tens and you get 3.14. Count in twos and you get 11.001. Either way, it is you.',
             'The warp gate is open. Or keep going: every asteroid four times heavier gives one more binary digit.',
+            'And look, my base dial has switched on. Turn it and the counter will count in any base you like, from 2 to 10.',
           ],
         },
       ],
@@ -970,12 +971,23 @@ export const DIALOGUE = {
     ],
 
     // Talking to 12 after the warp gate is open.
-    again: [{ twelve: ['Press R to watch the last run again. Four times heavier, one more binary digit.'] }],
+    again: [{ twelve: ['Press R to watch the last run again. Or turn my base dial and count in another base.'] }],
 
     // Talking to 12 once all five are done and the custom pad is open.
-    extras: [{ twelve: ['Build an asteroid of any mass you like and count its collisions. Watch the binary counter.'] }],
+    extras: [{ twelve: ['Build an asteroid of any mass you like and count its collisions. Or turn the base dial and try another base.'] }],
 
-    // After the first run from the custom pad. The point goes after the first two binary digits, as for the others.
-    custom: [{ twelve: ['{mass}: {count} collisions, {digits} in binary. Put the point in after the first two digits: {pointed}. That is {value}.', 'Is that you, Pi? Try some other masses and see.'] }],
+    // After the first run from the custom pad. {inBase} = the base it was counted in ("binary", "base 5" …).
+    custom: [{ twelve: ['{mass}: {count} collisions, {digits} in {inBase}. Put the point in where it goes for you: {pointed}. That is {value}.', 'Is that you, Pi? Try some other masses and see.'] }],
+
+    // The first time π turns the base dial. {base} = the new base, {top} = its biggest digit, {step} = base × base.
+    dial: [
+      {
+        twelve: [
+          'Base {base}! Now each place is worth {base} times the one to its right, and the digits only go up to {top}.',
+          'My asteroids have changed too. Each one is {step} times heavier than the one before.',
+          'Same rocks, same shield, same counting. Watch where the point goes.',
+        ],
+      },
+    ],
   },
 };

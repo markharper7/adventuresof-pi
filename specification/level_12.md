@@ -39,4 +39,18 @@ Each step is 4 times heavier and adds one binary digit. One decimal digit is wor
 8. Don't explain why, as in level 11. The NPC can explain binary itself (only 0s and 1s, each place worth twice the one to its right) since the player may not know it, but not why the collisions give pi
 9. A new NPC (12?) to run the level. Placeholder dialogue until npc_dialogue.md has some
 10. Level 12 becomes the finale, or an encore after level 11's finale. Level 11's closing dialogue may need adjusting
-11. Debug jumps: before talking to the NPC, briefed with nothing pushed, and the warp gate open
+11. Debug jumps: before talking to the NPC, briefed with nothing pushed, the warp gate open, and counting in another base (e.g. 3 and 8)
+12. A base dial next to the NPC, switched on when the warp gate opens, lets the player count in any base b from 2 to 10. Binary stays the opening and the story; the dial is the optional extra after it
+    - The pads change to that base's asteroids: b², b⁴, b⁶, b⁸, b¹⁰ tonnes for bases 2 to 6. From base 7 up b¹⁰ is over 100,000,000 t, so those bases use 1 t, b², b⁴, b⁶, b⁸
+    - The point goes k places from the right for a b^(2k) tonne asteroid (√mass = b^k, so the count is π shifted k places in base b)
+    - The four boxes stay the same; the second one counts in the chosen base ("In base 5"), and the value is collisions ÷ b^k, which goes to the tracker. Exact for bases 2, 4, 5, 8 and 10, rounded for 3, 6, 7 and 9
+    - Each base keeps its own runs and its pads unlock in order again. Only binary's first asteroid is counted by hand
+    - The custom pad works in any base, with the point where π's point is in that base (after two digits in bases 2 and 3, after one from base 4 up)
+    - The NPC explains the chosen base the first time the dial is turned (each place is worth b times the one to its right, digits up to b − 1), but still not why the collisions give pi
+
+| Base | Pads | 4th pad | Collisions | In base b | Point in | Value |
+|---|---|---|---|---|---|---|
+| 2 | 4 t … 1,024 t | 256 t | 50 | 110010 | 11.0010 | 3.125 |
+| 3 | 9 t … 59,049 t | 6,561 t | 254 | 100102 | 10.0102 | 3.1358 |
+| 5 | 25 t … 9,765,625 t | 390,625 t | 1963 | 30323 | 3.0323 | 3.1408 |
+| 8 | 1 t … 16,777,216 t | 262,144 t | 1608 | 3110 | 3.110 | 3.140625 |

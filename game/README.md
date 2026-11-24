@@ -180,7 +180,11 @@ debug menu's demo statistics are the only exception.
    by hand (6, shown as 110); the 64 t run (11.001 = 3.125) opens the warp gate. Once all five are done an optional
    custom pad opens, as in level 11 (any mass up to 100,000,000 t, nothing to the tracker); all four boxes fill in,
    with the point after the first two binary digits (50 t → 22 → 10110 → 10.110 = 2.75).
-   Levels 11 and 12 share all their code (`src/levels/clink-common.js`); each level file is just a config (base, masses, NPC, counter style).
+   When the warp gate opens, the **base dial** next to 12 switches on: Enter picks any base b from 2 to 10. The pads
+   change to b², b⁴ … b¹⁰ tonnes (1 t, b² … b⁸ from base 7 up, to stay under 100,000,000 t), the second box counts in
+   that base, the point goes k places from the right for a b^(2k) tonne asteroid, and the value (count ÷ bᵏ) goes to
+   the tracker. Each base keeps its own runs; 12 explains the new base the first time the dial is turned.
+   Levels 11 and 12 share all their code (`src/levels/clink-common.js`); each level file is just a config (base, masses, NPC, counter style, base dial).
 
 ## Debug
 
