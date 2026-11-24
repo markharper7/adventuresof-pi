@@ -4,7 +4,7 @@ Colliding blocks in binary. Same rocks, same shield, same counting as level 11, 
 
 ## Level 12 Method
 
-Galperin's colliding blocks again (see level_11.md and methods.md 19). If the big asteroid weighs M tonnes (the little rock is 1 tonne), the number of collisions is π × √M rounded down.
+Galperin's colliding blocks again (see level_11.md and ../methods.md 19). If the big asteroid weighs M tonnes (the little rock is 1 tonne), the number of collisions is π × √M rounded down.
 - Level 11 uses M = 100^n, so √M = 10^n and the count is pi's decimal digits with the point taken out (31, 314, 3141 …)
 - Level 12 uses M = 4^k, so √M = 2^k and the count is pi's binary digits with the point taken out. Multiplying by 2 shifts a binary number one place, just as multiplying by 10 shifts a decimal one
 
@@ -37,7 +37,7 @@ Each step is 4 times heavier and adds one binary digit. One decimal digit is wor
 6. Each run adds the value (collisions ÷ 2^k) to the tracker
 7. The warp gate opens after the 64 t run (11.001 = 3.125, the first value that isn't just 3). Perhaps
 8. Don't explain why, as in level 11. The NPC can explain binary itself (only 0s and 1s, each place worth twice the one to its right) since the player may not know it, but not why the collisions give pi
-9. A new NPC (12?) to run the level. Placeholder dialogue until npc_dialogue.md has some
+9. A new NPC (12?) to run the level. Placeholder dialogue until ../npc_dialogue.md has some
 10. Level 12 becomes the finale, or an encore after level 11's finale. Level 11's closing dialogue may need adjusting
 11. Debug jumps: before talking to the NPC, briefed with nothing pushed, the warp gate open, and counting in another base (e.g. 3 and 8)
 12. A base dial next to the NPC, switched on when the warp gate opens, lets the player count in any base b from 2 to 10. Binary stays the opening and the story; the dial is the optional extra after it

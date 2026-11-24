@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
 // NPC DIALOGUE — every line spoken by a character in the game, in one place.
 //
-// Source of truth: ../npc_dialogue.md (written by the human author). Keep this
+// Source of truth: ../specification/npc_dialogue.md (written by the human author). Keep this
 // file in step with it. Tutorial hints / toasts / the sidebar are NOT dialogue
 // and live in the level files.
 //
